@@ -72,6 +72,10 @@ async def multi_search(queries: list[str], newsapi_key: str, page_size: int = 10
 
     tasks = []
     for q in queries:
+        # actually, instead of making a request for each query, 
+        # we could also make a single request with all queries combined with OR operator if the API supports it, 
+        # to save on number of API calls and rate limits. 
+        # But for now we do one request per query for testing purposes and better control over which query retrieved which article
         tasks.append(search_newsapi(q, newsapi_key, page_size))
         # add other search functions here as needed in the future like gnews
     
