@@ -11,9 +11,11 @@ PM-unbubble/
 │
 ├── .venv/            (in .gitignore)
 ├── src/              (code)
+    └── headline_analyst/ (main package)
 ├── requirements.txt  (contains dependencies)
 ├── README.md         
-├── .gitignore        
+├── .gitignore    
+├── config.yaml       (config for execution)    
 └── .env              (environement variables/api keys)
 ```
 
@@ -113,3 +115,14 @@ NEWSAPI_KEY=... (your api key for NewsAPI)
 ```
 
 To get one, just create an account on : https://newsapi.org/
+
+### `GEMINI_API_KEY`
+
+The API key for Google's Gemini LLM models.
+
+Inside `.env` file :
+```
+GEMINI_API_KEY=... (your api key for Gemini)
+```
+
+To get one, connect to a google account and generate an API key on : https://aistudio.google.com/api-keys
