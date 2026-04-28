@@ -116,6 +116,17 @@ NEWSAPI_KEY=... (your api key for NewsAPI)
 
 To get one, just create an account on : https://newsapi.org/
 
+### `GNEWS_KEY`
+
+The API key for the GNews API fetch headline articles with Google News.
+
+Inside `.env` file :
+```
+GNEWS_KEY=... (your api key for GNews)
+```
+
+To get one, just create an account on : https://gnews.io/
+
 ### `GEMINI_API_KEY`
 
 The API key for Google's Gemini LLM models.
