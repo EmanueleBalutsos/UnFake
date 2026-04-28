@@ -16,7 +16,7 @@ Return ONLY the JSON array, no other text.
 
 class QueryGenerator(ABC):
     @abstractmethod
-    def generate_queries(self, event: str, num_queries: int = 10) -> list[str]:
+    async def generate_queries(self, event: str, num_queries: int = 10) -> list[str]:
         pass
     def parse(self, raw: str) -> list[str]:
         try:

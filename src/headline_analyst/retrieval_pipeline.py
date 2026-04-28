@@ -4,7 +4,7 @@ import asyncio
 from dotenv import load_dotenv
 
 from headline_analyst.query_expansion import generate_queries
-from headline_analyst.config.config_loader import load_config
+from headline_analyst.utils.config_loader import load_config
 
 from headline_analyst.data import Article
 from headline_analyst.retrieval import *
@@ -30,7 +30,8 @@ async def gather_articles(event: str,
         # Step 1. Expand queries for a given news event
         query_gen_config = load_config()["query_generator"] # load llm provider for query expansion specified in the yaml config
 
-        queries = generate_queries(query_gen_config=query_gen_config, event=event, num_queries=num_queries)
+        # also make fallback option to strictly only rely on user input as-is if query expansion fails for some reason
+        queries = await generate_queries(query_gen_config=query_gen_config, event=event, num_queries=num_queries)
         print(f"Generated {len(queries)} queries: \n {queries}")
 
         print("\n\n----------------------------------------------\n\n")
@@ -38,10 +39,13 @@ async def gather_articles(event: str,
         # Step 2. Multi-source search
         load_dotenv()
         newsApi_key = os.environ.get('NEWSAPI_KEY')
+        gnews_key = os.environ.get('GNEWS_KEY')
         if newsApi_key is None:
             raise ValueError("NEWSAPI_KEY environment variable is not set")
+        if gnews_key is None:
+            raise ValueError("GNEWS_KEY environment variable is not set")
         
-        articles = await multi_search(queries, newsapi_key=newsApi_key, page_size=page_size_per_query)
+        articles = await multi_search(queries, newsapi_key=newsApi_key, gnews_key=gnews_key, page_size=page_size_per_query)
         if not articles:
             print("No articles matching query found. Event might be too old to still be indexed by our search APIs, or API requests might have failed/reached rate limits.")
             return []
@@ -74,6 +78,7 @@ async def gather_articles(event: str,
         print("\n\n----------------------------------------------\n\n")
 
         # Step 4.2. Cluster to isolate main event (catches sub-event drift)
+        # OPTIONAL
         if use_clustering:
                 clusters = cluster_by_subevent(articles)
                 articles = pick_dominant_cluster(clusters)
@@ -89,7 +94,7 @@ async def gather_articles(event: str,
         # Step 4.3. LLM relevance filter (for better precision)
         if use_llm_filter:
                 relevance_checker_config = load_config()["llm_relevance_checker"] # load llm provider for relevance checking specified in the yaml config
-                articles = llm_relevance_filter(relevance_checker_config, articles, event)
+                articles = await llm_relevance_filter(relevance_checker_config, articles, event)
                 if not articles:
                         print("No articles matching query found after LLM relevance filter.")
                         return []
@@ -104,8 +109,8 @@ async def gather_articles(event: str,
 asyncio.run(gather_articles("Trump on the Iran war", 
                             num_queries=10, 
                             page_size_per_query=5, 
-                            embedding_threshold=0.55, 
-                            use_clustering=True, 
+                            embedding_threshold=0.4, 
+                            use_clustering=False, 
                             use_llm_filter=True))
 
 

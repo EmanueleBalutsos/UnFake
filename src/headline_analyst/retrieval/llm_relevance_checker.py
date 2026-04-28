@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from headline_analyst.data import Article
 import json
 
@@ -18,19 +19,19 @@ class LLMArticleRelevanceChecker(ABC):
     Interface for LLM-based article relevance checkers to determine if retrieved articles are about the same event as the query.
     Subclasses implement _check_batch() for a specific LLM provider.
     """
-    def filter(self, articles: list[Article], event: str, batch_size: int=20) -> list[Article]:
+    async def filter(self, articles: list[Article], event: str, batch_size: int=20) -> list[Article]:
         """Filter articles, returning only those relevant to the queried event."""
         relevant = []
 
         for i in range(0, len(articles), batch_size):
             batch = articles[i:i+batch_size]
-            flags = self._check_batch(batch,event)
+            flags = await self._check_batch(batch,event)
             relevant.extend(a for a, f in zip(batch, flags) if f)
         return relevant
 
 
     @abstractmethod
-    def _check_batch(self, articles: list[Article], event: str) -> list[bool]:
+    async def _check_batch(self, articles: list[Article], event: str) -> list[bool]:
         """
         Given a batch of articles and an event description, return a list of booleans indicating :
         True if the article is about the event, False otherwise.

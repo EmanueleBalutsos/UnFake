@@ -33,7 +33,7 @@ def filter_by_event_coherence(
     return [a for a, sim in zip(articles, sims) if sim >= threshold]
 
 
-def llm_relevance_filter(
+async def llm_relevance_filter(
         relevance_checker_config: dict,
         articles: list[Article],
         event_query: str,
@@ -45,7 +45,11 @@ def llm_relevance_filter(
     This is more expensive but can catch more subtle relevance issues that simple cosine similarity might miss.
     """
     llm_checker = create_relevance_checker(relevance_checker_config)
-    return llm_checker.filter(articles, event_query, batch_size=batch_size)
+
+    async with llm_checker:
+        articles = await llm_checker.filter(articles, event_query, batch_size)
+
+    return articles
 
 
 def cluster_by_subevent(

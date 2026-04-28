@@ -1,6 +1,7 @@
 import httpx
 
-from .llm_relevance_checker import LLMArticleRelevanceChecker, PROMPT
+from headline_analyst.utils.requests import httpx_request_with_retries
+from .llm_relevance_checker import LLMArticleRelevanceChecker
 from headline_analyst.data import Article
 
 class GeminiArticleRelevanceChecker(LLMArticleRelevanceChecker):
@@ -9,8 +10,20 @@ class GeminiArticleRelevanceChecker(LLMArticleRelevanceChecker):
     def __init__(self, api_key: str, model: str):
         self.api_key = api_key
         self.model = model
+        self.client = None
 
-    def _check_batch(self, articles: list[Article], event: str, batch_size: int = 20) -> list[bool]:
+    async def __aenter__(self):
+        self.client = httpx.AsyncClient()
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.client.aclose()
+        self.client = None
+
+    async def _check_batch(self, articles: list[Article], event: str) -> list[bool]:
+        if self.client is None:
+            raise RuntimeError("Client not initialized. Use async with.")
+
         # Pass parameters into the prompt template
         prompt = self._build_prompt(articles, event)
         
@@ -25,10 +38,14 @@ class GeminiArticleRelevanceChecker(LLMArticleRelevanceChecker):
                 }
             ]
         }
-        
-        response = httpx.post(url, json=json_req)
-        response.raise_for_status()
 
-        print(response.json())
+        response = await httpx_request_with_retries(
+            method="POST",
+            url=url,
+            client=self.client,
+            json=json_req,
+            timeout=30.0,
+            max_retries=3)
+
         raw = response.json()["candidates"][0]["content"]["parts"][0]["text"]
         return self._parse_response(raw, expected_length=len(articles))

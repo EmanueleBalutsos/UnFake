@@ -13,8 +13,11 @@ def create_query_generator(query_gen_config: dict) -> QueryGenerator:
         raise ValueError(f"Unknown provider: {provider_name}")
     
 
-def generate_queries(query_gen_config: dict, event: str, num_queries: int = 10) -> list[str]:
+async def generate_queries(query_gen_config: dict, event: str, num_queries: int = 10) -> list[str]:
     """Helper function to create a query generator and generates queries for an event."""
 
+    queries = []
     query_gen = create_query_generator(query_gen_config)
-    return query_gen.generate_queries(event=event, num_queries=num_queries)
+    async with query_gen:
+        queries = await query_gen.generate_queries(event=event, num_queries=num_queries)
+    return queries
