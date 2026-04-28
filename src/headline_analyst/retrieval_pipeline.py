@@ -106,12 +106,13 @@ async def gather_articles(event: str,
 
 
 # Test
-asyncio.run(gather_articles("Trump on the Iran war", 
-                            num_queries=10, 
-                            page_size_per_query=5, 
-                            embedding_threshold=0.4, 
-                            use_clustering=False, 
-                            use_llm_filter=True))
+if __name__ == "__main__":
+        asyncio.run(gather_articles("Trump on the Iran war", 
+                                    num_queries=10, 
+                                    page_size_per_query=5, 
+                                    embedding_threshold=0.4, 
+                                    use_clustering=False, 
+                                    use_llm_filter=True))
 
 
 
