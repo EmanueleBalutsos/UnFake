@@ -11,8 +11,6 @@ from dotenv import load_dotenv
 # ---------------------------------
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# aggiunge ./src al path
 sys.path.insert(0, os.path.join(BASE_DIR, "src"))
 
 
