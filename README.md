@@ -7,16 +7,21 @@
 Project structure should look like this :
 
 ```
-PM-unbubble/
-│
-├── .venv/            (in .gitignore)
-├── src/              (code)
-    └── headline_analyst/ (main package)
-├── requirements.txt  (contains dependencies)
-├── README.md         
-├── .gitignore    
-├── config.yaml       (config for execution)    
-└── .env              (environement variables/api keys)
+.
+├── README.md
+├── app.py
+├── .env
+├── .gitignore
+├── config.yaml
+├── firebase-credentials.json
+├── requirements.txt
+├── src
+│   ├── database
+│       └──...
+│   └── headline_analyst
+│       └──...
+└── templates
+    └── index.html
 ```
 
 The virtual environment folder should **not** be committed to the Git repo. If dependencies are added, please update the `requirements.txt`.
@@ -137,3 +142,7 @@ GEMINI_API_KEY=... (your api key for Gemini)
 ```
 
 To get one, connect to a google account and generate an API key on : https://aistudio.google.com/api-keys
+
+### `firebase-credentials.json`
+
+This file is the private key for the firebase database where the satisfaction/neutrality poll answers are stored.
