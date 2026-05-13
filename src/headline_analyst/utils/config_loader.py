@@ -34,6 +34,9 @@ def _resolve_dict(d: dict) -> dict:
     return resolved
 
 def load_config(path: str = CONFIG_PATH) -> dict:
+    """
+    Load a config dictionary in the config.yaml file, specifying which models to use for which task at run time.
+    """
     with open(path) as f:
         raw = yaml.safe_load(f)
     return _resolve_dict(raw)

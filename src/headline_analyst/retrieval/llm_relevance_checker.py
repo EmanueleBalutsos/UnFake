@@ -40,6 +40,10 @@ class LLMArticleRelevanceChecker(ABC):
         pass
 
     def _build_prompt(self, articles: list[Article], event: str) -> str:
+        """
+        Format the inputs in the prompt sent to the LLM model as such :
+        [Source of Article] Headline - Description: description retrieved from article
+        """
         items = "\n".join(
                 f"{j+1}. [{a.source}] {a.title} - Description: {a.description}" for j, a in enumerate(articles)
             )

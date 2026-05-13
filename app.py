@@ -4,6 +4,7 @@ import asyncio
 
 from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
+from huggingface_hub import login
 
 # ---------------------------------
 # Setup Python path
@@ -17,6 +18,11 @@ sys.path.insert(0, os.path.join(BASE_DIR, "src"))
 # Load environment
 # ---------------------------------
 load_dotenv()
+
+# Login to HuggingFace Hub if token provided (to make requests faster)
+token = os.getenv("HF_TOKEN")
+if(token):
+    login(token=token)
 
 # ---------------------------------
 # Project imports
@@ -217,6 +223,7 @@ def search():
                 num_queries=10,
                 page_size_per_query=5,
                 embedding_threshold=0.4,
+                use_query_expansion=True, # we could make a button to disable it on the UI perhaps ?
                 use_clustering=False,
                 use_llm_filter=True
             )

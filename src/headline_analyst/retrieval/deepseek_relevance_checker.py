@@ -4,8 +4,8 @@ from headline_analyst.utils.requests import httpx_request_with_retries
 from .llm_relevance_checker import LLMArticleRelevanceChecker
 from headline_analyst.data import Article
 
-class GeminiArticleRelevanceChecker(LLMArticleRelevanceChecker):
-    """Free Gemini cloud LLM for relevance checking if retrieved article matches queried event (1500 req/day free tier)"""
+class DeepseekArticleRelevanceChecker(LLMArticleRelevanceChecker):
+    """Deepseek cloud LLM for relevance checking if retrieved article matches queried event"""
 
     def __init__(self, api_key: str, model: str, url: str):
         self.api_key = api_key
@@ -14,7 +14,7 @@ class GeminiArticleRelevanceChecker(LLMArticleRelevanceChecker):
         self.url = url
 
     async def __aenter__(self):
-        self.client = httpx.AsyncClient()
+        self.client = httpx.AsyncClient(headers={"Authorization": f"Bearer {self.api_key}"})
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
@@ -25,17 +25,11 @@ class GeminiArticleRelevanceChecker(LLMArticleRelevanceChecker):
         if self.client is None:
             raise RuntimeError("Client not initialized. Use async with.")
 
-        # Pass parameters into the prompt template
         prompt = self._build_prompt(articles, event)
-        
+
         json_req = {
-            "contents": [
-                {
-                    "parts": [
-                        {"text": prompt}
-                    ]
-                }
-            ]
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}],
         }
 
         response = await httpx_request_with_retries(
@@ -44,7 +38,8 @@ class GeminiArticleRelevanceChecker(LLMArticleRelevanceChecker):
             client=self.client,
             json=json_req,
             timeout=30.0,
-            max_retries=3)
+            max_retries=3,
+        )
 
-        raw = response.json()["candidates"][0]["content"]["parts"][0]["text"]
+        raw = response.json()["choices"][0]["message"]["content"]
         return self._parse_response(raw, expected_length=len(articles))

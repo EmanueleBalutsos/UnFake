@@ -3,8 +3,8 @@ import httpx
 from .query_generator import QueryGenerator, EXPANSION_PROMPT
 from headline_analyst.utils.requests import httpx_request_with_retries
 
-class GeminiQueryGenerator(QueryGenerator):
-    """Free Gemini cloud LLM for query expansion (1500 req/day free tier)"""
+class DeepseekQueryGenerator(QueryGenerator):
+    """Deepseek cloud LLM for query expansion"""
 
     def __init__(self, api_key: str, model: str, url: str):
         self.api_key = api_key
@@ -13,7 +13,7 @@ class GeminiQueryGenerator(QueryGenerator):
         self.url = url
 
     async def __aenter__(self):
-        self.client = httpx.AsyncClient()
+        self.client = httpx.AsyncClient(headers={"Authorization": f"Bearer {self.api_key}"})
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
@@ -24,17 +24,11 @@ class GeminiQueryGenerator(QueryGenerator):
         if self.client is None:
             raise RuntimeError("Client not initialized. Use async with.")
 
-        # Pass parameters into the prompt template
         prompt = EXPANSION_PROMPT.format(event=event, num_queries=num_queries)
-        
+
         json_req = {
-            "contents": [
-                {
-                    "parts": [
-                        {"text": prompt}
-                    ]
-                }
-            ]
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}],
         }
 
         response = await httpx_request_with_retries(
@@ -43,8 +37,8 @@ class GeminiQueryGenerator(QueryGenerator):
             client=self.client,
             json=json_req,
             timeout=30.0,
-            max_retries=3
+            max_retries=3,
         )
-        
-        raw = response.json()["candidates"][0]["content"]["parts"][0]["text"]
+
+        raw = response.json()["choices"][0]["message"]["content"]
         return self.parse(raw)

@@ -1,9 +1,35 @@
+# Model used for query expansion at run time
+# Supports Gemini & Deepseek
 query_generator:
   provider: gemini
   api_key: ${GEMINI_API_KEY}
   model: gemini-3.1-flash-lite-preview
+  url: # leave empty to use the default endpoint
 
+# Model used for filtering the articles retrieved by the queries at run time
+# Supports Gemini & Deepseek
 llm_relevance_checker:
   provider: gemini
   api_key: ${GEMINI_API_KEY}
   model: gemini-3.1-flash-lite-preview
+  url: # leave empty to use the default endpoint
+
+# Model used for the framing analysis on the headlines at run time
+# Supports Gemini & Deepseek
+llm_framing_analyzer:
+  provider: gemini
+  api_key: ${GEMINI_API_KEY}
+  model: gemini-3.1-flash-lite-preview
+  url: # # leave empty to use the default endpoint
+
+# Deepseek at run time for framing analysis
+# llm_framing_analyzer:
+#   provider: deepseek
+#   api_key: ${DEEPSEEK_API_KEY}
+#   model: deepseek-v4-flash
+#   url: # leave empty to use the default endpoint
+
+# HuggingFace model used (BERT or roBERTa) to detect emotional tone of the headlines at run time
+hf_emotions_detector:
+  model: SamLowe/roberta-base-go_emotions
+

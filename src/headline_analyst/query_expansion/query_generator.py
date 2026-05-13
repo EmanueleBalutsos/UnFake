@@ -15,6 +15,10 @@ Return ONLY the JSON array, no other text.
 """
 
 class QueryGenerator(ABC):
+    """
+    Abstract class to implement LLM models for query expansion.
+    Concrete implementations must inherit from this class.
+    """
     @abstractmethod
     async def generate_queries(self, event: str, num_queries: int = 10) -> list[str]:
         pass

@@ -26,7 +26,7 @@ Project structure should look like this :
 
 The virtual environment folder should **not** be committed to the Git repo. If dependencies are added, please update the `requirements.txt`.
 
-The `.env` files containing API keys should **not** be committed to the Git repo. Make it is listed in the `.gitignore`.
+The `.env` and `firebase-credentials.json` files containing API keys should **not** be committed to the Git repo. Make sure both are listed in the `.gitignore`.
 
 
 
@@ -100,7 +100,7 @@ If you installed new dependencies, update `requirements.txt` so everyone else ca
 pip freeze > requirements.txt
 ```
 
-## Environment variables
+## Environment variables & API keys
 The `.env` file should be located at the base of the `PM-unbubble` folder, and it contains all the API tokens necessary for API dependencies. **It should never be committed to the remote repository.**
 
 To add environment variables in your own `.env` file :
@@ -146,3 +146,9 @@ To get one, connect to a google account and generate an API key on : https://ais
 ### `firebase-credentials.json`
 
 This file is the private key for the firebase database where the satisfaction/neutrality poll answers are stored.
+
+## Config at run time
+
+Models used at run time for the different AI-based tasks can be easily specified by only changing the `config.yaml` file.
+
+*Note: Currently, Only Gemini & Deepseek are available. While this tool is planned to be modular, concrete implementations for other LLM providers are not yet made.*

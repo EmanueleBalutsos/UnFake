@@ -17,6 +17,7 @@ async def gather_articles(event: str,
                           num_queries: int = 10, 
                           page_size_per_query: int = 10, 
                           embedding_threshold: float = 0.75, 
+                          use_query_expansion: bool = True,
                           use_clustering: bool = True,
                           use_llm_filter: bool = True) -> list[Article]:
         """
@@ -27,12 +28,17 @@ async def gather_articles(event: str,
         4. Filter by coherence with the original event description, using both cosine similarity and an LLM relevance checker.
         """
 
-        # Step 1. Expand queries for a given news event
-        query_gen_config = load_config()["query_generator"] # load llm provider for query expansion specified in the yaml config
-
-        # also make fallback option to strictly only rely on user input as-is if query expansion fails for some reason
-        queries = await generate_queries(query_gen_config=query_gen_config, event=event, num_queries=num_queries)
-        print(f"Generated {len(queries)} queries: \n {queries}")
+        if(use_query_expansion):
+                # Step 1. Expand queries for a given news event
+                query_gen_config = load_config()["query_generator"] # load llm provider for query expansion specified in the yaml config
+                try:
+                        queries = await generate_queries(query_gen_config=query_gen_config, event=event, num_queries=num_queries)
+                        print(f"Generated {len(queries)} queries: \n {queries}")
+                except Exception as e:
+                        print(f"Query expansion failed ({e}), falling back to raw event input.")
+                        queries = [event]
+        else: # query expansion disabled -> only rely on raw user input
+               queries = [event]
 
         print("\n\n----------------------------------------------\n\n")
 
@@ -110,7 +116,8 @@ if __name__ == "__main__":
         asyncio.run(gather_articles("Trump on the Iran war", 
                                     num_queries=10, 
                                     page_size_per_query=5, 
-                                    embedding_threshold=0.4, 
+                                    embedding_threshold=0.4,
+                                    use_query_expansion=True,
                                     use_clustering=False, 
                                     use_llm_filter=True))
 
