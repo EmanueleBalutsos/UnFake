@@ -12,7 +12,7 @@ def print_analyses(analyses: List[Analysis], articles: List[Article],
         idx = analysis.headline_index
         article = articles[idx] if idx < len(articles) else None
 
-        print(f"\n[{idx}] {article.title if article else f'Article {idx} not found'}")
+        print(f"\n[{idx}] {article.source if article else f'Article {idx} not found'}")
         if article:
             print(f"    Headline : {article.title}")
 
