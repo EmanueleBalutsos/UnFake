@@ -1,85 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Headline Analizer Prototype</title>
-    <style>
-        body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; color: #333; }
-        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
-        input[type="text"] { flex-grow: 1; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 4px; }
-        button:hover { background-color: #0056b3; }
-        .loading { display: none; color: #666; font-style: italic; margin-bottom: 20px; }
-        .article { border: 1px solid #eee; padding: 15px; margin-bottom: 15px; border-radius: 5px; background-color: #f9f9f9; }
-        .article h3 { margin-top: 0; }
-        .article a { color: #007bff; text-decoration: none; }
-        .article a:hover { text-decoration: underline; }
-        .meta { font-size: 0.9em; color: #555; margin-bottom: 10px; }
-    </style>
-</head>
-<body>
-
-    <h1>Headline Analizer</h1>
-    <p>Enter a news event to analyze it and retrieve articles from different perspectives.</p>
-
-    <div class="search-box">
-        <input type="text" id="eventInput" placeholder="E.g., Trump on the Iran war">
-        <button onclick="runSearch()">Search</button>
-    </div>
-
-    <div id="loading" class="loading">Generating queries, searching and analyzing. Please wait...</div>
-    <div id="results"></div>
-
-    <script>
-        async function runSearch() {
-            const eventInput = document.getElementById('eventInput').value.trim();
-            const resultsDiv = document.getElementById('results');
-            const loadingDiv = document.getElementById('loading');
-
-            if (!eventInput) return;
-
-            // Reset UI
-            resultsDiv.innerHTML = '';
-            loadingDiv.style.display = 'block';
-
-            try {
-                const response = await fetch('/search', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ event: eventInput })
-                });
-
-                const data = await response.json();
-                loadingDiv.style.display = 'none';
-
-                if (data.error) {
-                    resultsDiv.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
-                    return;
-                }
-
-                if (data.articles && data.articles.length > 0) {
-                    data.articles.forEach(article => {
-                        const articleHtml = `
-                            <div class="article">
-                                <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
-                                <div class="meta">
-                                    <strong>Source:</strong> ${article.source} | <strong>Generated from query:</strong> <em>${article.query_origin}</em>
-                                </div>
-                                <p>${article.description}</p>
-                            </div>
-                        `;
-                        resultsDiv.insertAdjacentHTML('beforeend', articleHtml);
-                    });
-                } else {
-                    resultsDiv.innerHTML = '<p>No articles found for this event.</p>';
-                }
-            } catch (error) {
-                loadingDiv.style.display = 'none';
-                resultsDiv.innerHTML = '<p style="color: red;">A connection error with the server occurred.</p>';
-            }
-        }
-    </script>
-
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unbubble — Headline Framing Analysis</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
