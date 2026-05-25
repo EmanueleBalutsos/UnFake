@@ -39,11 +39,11 @@ firebase_manager = None
 if os.path.exists(FIREBASE_CERT_PATH):
     try:
         firebase_manager = FirebaseManager(FIREBASE_CERT_PATH)
-        print("✅ Firebase connected successfully.")
+        print("Firebase connected successfully.")
     except Exception as e:
-        print(f"❌ Error initializing Firebase: {e}")
+        print(f"Error initializing Firebase: {e}")
 else:
-    print(f"⚠️ Firebase credentials not found in {FIREBASE_CERT_PATH}")
+    print(f"Firebase credentials not found in {FIREBASE_CERT_PATH}")
 
 
 @app.route("/")
