@@ -73,7 +73,7 @@ async function handleSearch(query) {
                                                        sentiment: a.sentiment || "neutral",
                                                        actors:    a.actors    || [],
                                                        tone:      a.tone      || "Neutral",
-                                                       tone_intensity: a.tone_intensity || 3, // Recupera l'intensità del tono passata dal backend
+                                                       tone_intensity: a.tone_intensity || 3, 
                                                        firstWord: (a.title || "").split(" ").slice(0, 2).join(" "),
                                                        url:       a.url       || null,
                                                        description: a.description || "",
@@ -220,10 +220,8 @@ function buildStarRating(article) {
   let starsHtml = "";
   for (let i = 1; i <= 5; i++) {
     if (i <= intensity) {
-      // Stella colorata (es. gialla)
       starsHtml += `<span class="star filled" style="color: #f59e0b; font-size: 1.2rem;">★</span>`;
     } else {
-      // Stella grigia/vuota
       starsHtml += `<span class="star" style="color: #e2e8f0; font-size: 1.2rem;">★</span>`;
     }
   }
