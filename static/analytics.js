@@ -6,12 +6,9 @@ async function loadAnalytics() {
         if (!response.ok) throw new Error("Errore HTTP");
 
         const data = await response.json();
-
-        // 1. Aggiorna i contatori principali
         document.getElementById('avg-rating').innerText = (data.average_rating || 0) + "/10";
         document.getElementById('total-feedbacks').innerText = data.total || 0;
 
-        // 2. Classifica (Leaderboard) - Ora con allineamento perfetto
         const leaderboard = document.getElementById('leaderboard-list');
         if (leaderboard) {
             leaderboard.innerHTML = "";
@@ -26,7 +23,6 @@ async function loadAnalytics() {
                     const medalDisplay = medals[i] || `<span style="color: #9ca3af; font-size: 1.1rem; font-weight: 800;">#${i+1}</span>`;
 
                     const row = document.createElement('div');
-                    // Stile del contenitore riga
                     row.style.display = "flex";
                     row.style.alignItems = "center";
                     row.style.width = "100%";
@@ -56,7 +52,6 @@ async function loadAnalytics() {
             }
         }
 
-        // 3. Recensioni Migliori - Strutturate come Card Premium
         const reviewList = document.getElementById('top-reviews-list');
         if (reviewList) {
             reviewList.innerHTML = "";
