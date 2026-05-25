@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UnFake — Headline Framing Analysis</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="app-root">
+
+  <!-- ═══════════ HEADER ═══════════ -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">
+          <!-- Search / newspaper icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <span class="logo-name">UnFake</span>
+      </div>
+      <nav class="header-nav">
+        <nav class="header-nav">
+        <a href="/" class="nav-link active">Home</a>
+        <a href="/analytics" class="nav-link">Analysis</a>
+        </nav>
+    </div>
+  </header>
+
+  <!-- ═══════════ MAIN ═══════════ -->
+  <main class="main-container">
+
+    <!-- Search page -->
+    <section id="search-section" class="search-section">
+      <h1 class="search-title">Analyze the Narrative</h1>
+      <p class="search-subtitle">
+        See how different media outlets frame the same news event.
+        Uncover bias, emotional tone, and hidden agendas.
+      </p>
+      <div class="search-bar">
+        <span class="search-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </span>
+        <input id="main-search-input" type="text" placeholder="Search a news event…" autocomplete="off" />
+        <button id="main-search-btn">Analyze</button>
+      </div>
+    </section>
+
+    <!-- Results page (hidden until search) -->
+    <div id="results-section" style="display:none;" class="results-wrapper">
+
+      <!-- Top bar -->
+      <div class="results-topbar">
+        <div>
+          <h1 class="results-title">Analysis Results</h1>
+          <p class="results-subtitle">Showing results for: <strong id="query-label"></strong></p>
+        </div>
+        <div class="inline-search">
+          <input id="inline-search-input" type="text" placeholder="Search another event…" autocomplete="off" />
+          <button id="inline-search-btn">Search</button>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <p id="error-message" class="error-message" style="display:none;"></p>
+
+      <!-- 3-column grid -->
+      <div class="results-grid">
+
+        <!-- Filters -->
+        <aside class="filters-panel">
+          <div class="filters-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+            </svg>
+            Filters
+          </div>
+          <div class="filter-group" id="source-filters">
+            <p class="filter-group-label">Source</p>
+          </div>
+          <div class="filter-group" id="sentiment-filters">
+            <p class="filter-group-label">Sentiment</p>
+          </div>
+        </aside>
+
+        <!-- Headlines -->
+        <div class="headlines-col">
+          <h2 class="headlines-count" id="headlines-count">Headlines (0)</h2>
+          <div id="headlines-list"></div>
+        </div>
+
+        <!-- Analysis charts -->
+        <div class="analysis-col" id="analysis-col" style="display:none;">
+          <div class="analysis-card">
+            <h4 class="analysis-card-title">Sentiment Distribution</h4>
+            <div class="chart-wrap"><canvas id="pie-chart"></canvas></div>
+          </div>
+          <div class="analysis-card">
+            <h4 class="analysis-card-title">Coverage by Source</h4>
+            <div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
+          </div>
+          <div class="analysis-card">
+            <h4 class="analysis-card-title">Top Actors Identified</h4>
+            <div class="actors-list" id="actors-list"></div>
+          </div>
+        </div>
+
+      </div><!-- end results-grid -->
+
+      <!-- Global feedback -->
+      <div id="feedback-section" class="global-feedback-card" style="display:none;">
+        <h3>What do you think about these results?</h3>
+        <div id="feedback-success" class="feedback-success" style="display:none;">
+          <p>Thank you! Your feedback has been saved successfully. ✅</p>
+        </div>
+        <form id="feedback-form" class="feedback-form">
+          <div class="rating-group">
+            <label>Rate your experience (1–10):</label>
+            <div class="rating-buttons">
+              {% for n in range(1, 11) %}
+              <button type="button" data-rating="{{ n }}">{{ n }}</button>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="comment-group">
+            <label>Leave a comment (optional):</label>
+            <textarea id="feedback-comment" rows="3" placeholder="Tell us what you think…"></textarea>
+          </div>
+          <button type="submit" class="submit-feedback-btn">Submit Feedback</button>
+        </form>
+      </div>
+
+    </div><!-- end results-section -->
+  </main>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

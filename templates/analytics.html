@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UnFake — Feedback Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="app-root">
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="logo"><span class="logo-name">UnFake Analytics</span></div>
+            <nav class="header-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/analytics" class="nav-link active">Dashboard</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content" style="display: flex; justify-content: center; padding: 40px 20px;">
+        <div class="results-grid" style="max-width: 900px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 30px;">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="analysis-card" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px;">
+                    <h4 class="analysis-card-title">Global Average Rating</h4>
+                    <div id="avg-rating" style="font-size: 4rem; font-weight: 800; color: var(--indigo-600); margin: 10px 0;">--</div>
+                    <p style="color: var(--text-500);">Overall user satisfaction</p>
+                </div>
+                <div class="analysis-card" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px;">
+                    <h4 class="analysis-card-title">Total Feedbacks</h4>
+                    <div id="total-feedbacks" style="font-size: 4rem; font-weight: 800; color: var(--text-900); margin: 10px 0;">--</div>
+                    <p style="color: var(--text-500);">Total reviews collected</p>
+                </div>
+            </div>
+
+            <div class="analysis-card" style="text-align: center; padding: 30px;">
+                <h4 class="analysis-card-title" style="margin-bottom: 25px;">Top Searched Topics 🏆</h4>
+                <div id="leaderboard-list" style="display: flex; flex-direction: column; gap: 12px; align-items: center;">
+                    </div>
+            </div>
+
+            <div class="analysis-card" style="text-align: center; padding: 30px;">
+                <h4 class="analysis-card-title" style="margin-bottom: 25px;">Top User Reviews ⭐</h4>
+                <div id="top-reviews-list" style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
+                    </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="/static/analytics.js"></script>
+</body>
+</html>
