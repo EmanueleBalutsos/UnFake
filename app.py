@@ -74,14 +74,14 @@ def search():
             page_size_per_query=4,
             embedding_threshold=0.4,
             use_query_expansion=True,
-            use_clustering=True,
+            use_clustering=False,
             use_llm_filter=True
         ))
 
         if not articles:
             return jsonify({"articles": []})
 
-        analyses = asyncio.run(analyze_headlines(articles, useEmotionClassifier=False))
+        analyses = asyncio.run(analyze_headlines(articles, useEmotionClassifier=True))
 
         result = []
         for i, a in enumerate(articles):

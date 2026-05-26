@@ -1,13 +1,12 @@
-from typing import List, Optional
+from typing import List
 import asyncio
 
 from headline_analyst.utils.config_loader import load_config
 
-from headline_analyst.data import Article, Analysis, Emotion
+from headline_analyst.data import Article, Analysis
 from headline_analyst.analyzer import *
 
-def print_analyses(analyses: List[Analysis], articles: List[Article],
-                   emotions: Optional[List[List[Emotion]]] = None):
+def print_analyses(analyses: List[Analysis], articles: List[Article]):
     for analysis in analyses:
         idx = analysis.headline_index
         article = articles[idx] if idx < len(articles) else None
@@ -30,9 +29,8 @@ def print_analyses(analyses: List[Analysis], articles: List[Article],
             entities = ', '.join(f"{e.name} [{e.role.name}]" for e in analysis.agencies)
             print(f"    Entities: {entities}")
 
-        if emotions and idx < len(emotions):
-            top3 = ', '.join(str(e) for e in emotions[idx])
-            print(f"    Emotions : {top3}")
+        if analysis.main_emotion:
+            print(f"    Main Emotion : {analysis.main_emotion}")
 
         print()
 
@@ -50,11 +48,9 @@ async def analyze_headlines(articles: List[Article], useEmotionClassifier: bool 
     print(f"{len(analyses)} analyses retrieved via LLM call. \n")
 
     if(useEmotionClassifier):
-        emotions = analyze_emotions(emotions_config, articles)
-        print_analyses(analyses, articles, emotions)
-    else:
-        print_analyses(analyses, articles)
-
+        analyze_emotions(emotions_config, articles, analyses)
+    
+    print_analyses(analyses, articles)
     return analyses
 
 

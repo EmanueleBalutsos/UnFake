@@ -66,6 +66,37 @@ class Genre(Enum):
     ENTERTAINMENT = 5
     OTHER = 6
 
+# From the GoEmotions dataset : 28 emotion categories + neutral
+class EmotionsEnum(Enum):
+    ADMIRATION = 1
+    AMUSEMENT = 2
+    ANGER = 3
+    ANNOYANCE = 4
+    APPROVAL = 5
+    CARING = 6
+    CONFUSION = 7
+    CURIOSITY = 8
+    DESIRE = 9
+    DISAPPOINTMENT= 10
+    DISAPPROVAL = 11
+    DISGUST = 12
+    EMBARASSMENT = 13
+    EXCITMENT = 14
+    FEAR = 15
+    GRATITUDE = 16
+    GRIEF = 17
+    JOY = 18
+    LOVE = 19
+    NERVOUSNESS = 20
+    OPTIMISM = 21
+    PRIDE = 22
+    REALIZATION = 23
+    RELIEF = 24
+    REMORSE = 25
+    SADNESS = 26
+    SURPRISE = 27
+    NEUTRAL = 28
+
 
 # ---------------- DATA CLASSES -------------------- #
 
@@ -100,11 +131,11 @@ class Entity:
 
 @dataclass(frozen=True)
 class Emotion:
-    label: str
+    label: EmotionsEnum
     score: float
 
     def __str__(self):
-        return f"{self.label} ({self.score:.2f})"
+        return f"{self.label.name} (score : {self.score:.2f})"
 
     def __repr__(self):
         return self.__str__()
@@ -119,6 +150,7 @@ class Analysis:
     focus: List[Focus]
     genre: Genre
     tone_intensity: int # 1 - 5 score
+    main_emotion: Emotion | None = None
 
     @classmethod
     def from_json(cls, data: dict):
@@ -135,7 +167,8 @@ class Analysis:
             frame = GenericFraming(data['framing']),
             focus = [Focus(int(k)) for k in data['focus']],
             genre = Genre(data['genre']),
-            tone_intensity=data['tone']
+            tone_intensity=data['tone'],
+            main_emotion=None
         )
 
 # ------------------- CLASSES FOR THE FORMATTING OF JSON OUTPUTS FOR GEMINI ------------------------- #

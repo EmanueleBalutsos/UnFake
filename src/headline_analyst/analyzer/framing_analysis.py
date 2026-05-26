@@ -1,13 +1,13 @@
 from transformers import pipeline
 
-from headline_analyst.data import Article, Analysis, Emotion
+from headline_analyst.data import Article, Analysis, Emotion, EmotionsEnum
 from headline_analyst.analyzer.factory import create_framing_analyzer
 
-def analyze_emotions(model_config: dict, articles: list[Article]) -> list[list[Emotion]]:
+def analyze_emotions(model_config: dict, articles: list[Article], analyses: list[Analysis]):
     """
     Analyze the emotions expressed in each headlines using a pre-trained model
     fine-tuned on the GoEmotions dataset, which classifies text into 28 emotion categories + neutral.
-    Returns the top-3 Emotion objects (label + score) for each headline.
+    Updates the main identified Emotion object (label + score) for each headline Analysis object.
     """
 
     model_name = model_config["model"]
@@ -16,11 +16,9 @@ def analyze_emotions(model_config: dict, articles: list[Article]) -> list[list[E
     headlines = [a.title for a in articles]
     model_outputs = classifier(headlines)
 
-    return [
-        [Emotion(label=e["label"], score=e["score"]) for e in output[:3]]
-        for output in model_outputs
-    ]
-
+    for a in analyses:
+        output = model_outputs[a.headline_index]
+        a.main_emotion = Emotion(label=EmotionsEnum[output[0]["label"].upper()], score=output[0]["score"])
 
 async def llm_framing_analysis(analyzer_config: dict, articles: list[Article]) -> list[Analysis]:
     """

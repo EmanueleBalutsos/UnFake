@@ -6,6 +6,7 @@ from headline_analyst.data.models import (
     GenericFraming,
     Focus,
     Genre,
+    EmotionsEnum,
     # Dataclasses
     Article,
     Entity,
@@ -24,6 +25,7 @@ __all__ = [
     "GenericFraming",
     "Focus",
     "Genre",
+    "EmotionsEnum",
     # Dataclasses
     "Article",
     "Entity",
