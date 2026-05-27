@@ -87,29 +87,40 @@ def search():
         for i, a in enumerate(articles):
             analysis = analyses[i] if i < len(analyses) else None
 
-            tone_val = "Neutral"
-            actors_val = []
-            sentiment_val = "neutral"
-            intensity_val = 3
+            frame_val = "OTHER" # generic frame of the headline among the 5 main types
+            actors_val = [] # actors in the headline
+            biases_val = {} # types of biases identified in the headline
+            focuses_val = [] # focuses (category of the perspective) among economy, policy, etc...
+            genre_val = "OTHER" # main genre of the headline among informative, editorial etc...
+            sentiment_val = "NEUTRAL" # main emotion
+            intensity_val = 3 # tone intensity score from 1 to 5
 
             if analysis:
                 if hasattr(analysis, "frame") and analysis.frame:
-                    tone_val = analysis.frame.name
+                    frame_val = analysis.frame.name
                 if hasattr(analysis, "agencies") and analysis.agencies:
-                    actors_val = [e.name for e in analysis.agencies]
+                    actors_val = [{"name": e.name, "role": e.role.name} for e in analysis.agencies]
+                if hasattr(analysis, "focus") and analysis.focus:
+                    focuses_val = [f.name for f in analysis.focus]
+                if hasattr(analysis, "genre") and analysis.genre:
+                    genre_val = analysis.genre.name
                 if hasattr(analysis, "tone_intensity"):
                     intensity_val = analysis.tone_intensity
+                if hasattr(analysis, "main_emotion") and analysis.main_emotion:
+                    sentiment_val = analysis.main_emotion.label.name
+                if hasattr(analysis, "biases") and analysis.biases:
+                    biases_val = {b.name: score for b, score in analysis.biases.items()} if analysis.biases else {}
 
-                has_biases = bool(hasattr(analysis, "biases") and analysis.biases)
+                # has_biases = bool(hasattr(analysis, "biases") and analysis.biases)
 
-                if intensity_val >= 4 and has_biases:
-                    sentiment_val = "negative"
-                elif intensity_val <= 2 and not has_biases:
-                    sentiment_val = "positive"
-                elif tone_val.lower() == "conflict":
-                    sentiment_val = "negative"
-                else:
-                    sentiment_val = "neutral"
+                # if intensity_val >= 4 and has_biases:
+                #     sentiment_val = "negative"
+                # elif intensity_val <= 2 and not has_biases:
+                #     sentiment_val = "positive"
+                # elif tone_val.lower() == "conflict":
+                #     sentiment_val = "negative"
+                # else:
+                #     sentiment_val = "neutral"
 
             result.append({
                 "title":        a.title,
@@ -118,9 +129,12 @@ def search():
                 "url":          a.url,
                 "published_at": a.published_at.isoformat() if a.published_at else None,
                 "sentiment":    sentiment_val,
-                "tone":         tone_val,
+                "frame":        frame_val,
                 "tone_intensity": intensity_val,
                 "actors":       actors_val,
+                "biases":       biases_val,
+                "focuses":        focuses_val,
+                "genre":        genre_val
             })
 
         return jsonify({"articles": result})

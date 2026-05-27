@@ -70,9 +70,12 @@ async function handleSearch(query) {
       id:        a.url || String(i),
                                                        headline:  a.title || a.headline || "No Title",
                                                        source:    a.source || "Unknown Source",
-                                                       sentiment: a.sentiment || "neutral",
+                                                       sentiment: a.sentiment || "NEUTRAL",
                                                        actors:    a.actors    || [],
-                                                       tone:      a.tone      || "Neutral",
+                                                       frame:     a.frame     || "OTHER",
+                                                       biases:    a.biases    || {},
+                                                       focuses:   a.focuses   || [],
+                                                       genre:     a.genre      || "OTHER",
                                                        tone_intensity: a.tone_intensity || 3, 
                                                        firstWord: (a.title || "").split(" ").slice(0, 2).join(" "),
                                                        url:       a.url       || null,
@@ -81,7 +84,7 @@ async function handleSearch(query) {
 
     // Auto-select all sources from fresh results
     selectedSources    = [...new Set(allArticles.map(a => a.source))];
-    selectedSentiments = ["positive", "neutral", "negative"];
+    selectedSentiments = [...new Set(allArticles.map(a => a.sentiment))];
 
     buildFilters();
     renderResults();
@@ -131,12 +134,13 @@ function buildFilters() {
     sourceFilters.appendChild(label);
   });
 
-  // Sentiment checkboxes
-  sentimentFilters.innerHTML = `<p class="filter-group-label">Sentiment</p>`;
-  ["positive", "neutral", "negative"].forEach(s => {
+  // Emotion checkboxes — values are dynamic emotion names from results
+  const emotions = [...new Set(allArticles.map(a => a.sentiment))];
+  sentimentFilters.innerHTML = `<p class="filter-group-label">Emotion</p>`;
+  emotions.forEach(s => {
     const label = document.createElement("label");
     label.className = "filter-item capitalize";
-    label.innerHTML = `<input type="checkbox" ${selectedSentiments.includes(s) ? "checked" : ""}/><span>${s}</span>`;
+    label.innerHTML = `<input type="checkbox" ${selectedSentiments.includes(s) ? "checked" : ""}/><span>${s.toLowerCase()}</span>`;
     label.querySelector("input").addEventListener("change", () => {
       toggleFilter(selectedSentiments, s);
       renderResults();
@@ -176,8 +180,17 @@ function renderResults() {
 
 // ── Result card ────────────────────────────────────────────────
 function buildCard(article) {
-  const badgeClass = { positive: "badge-positive", negative: "badge-negative", neutral: "badge-neutral" }[article.sentiment] || "badge-neutral";
-  const icon       = { positive: ICONS.thumbUp, negative: ICONS.thumbDown, neutral: ICONS.meh }[article.sentiment] || ICONS.meh;
+
+  // TODO:
+  // If you want custom badge classes and icons for each emotion (there's 28), have fun changing that.
+  // Look into models.py -> EmotionsEnum to know the key values to put instead of positive/negative/neutral
+  const NEGATIVE_EMOTIONS = new Set(["ANGER","ANNOYANCE","DISAPPOINTMENT","DISAPPROVAL","DISGUST","EMBARRASSMENT","FEAR","GRIEF","NERVOUSNESS","REMORSE","SADNESS"]);
+  const POSITIVE_EMOTIONS = new Set(["ADMIRATION","AMUSEMENT","APPROVAL","CARING","DESIRE","EXCITEMENT","GRATITUDE","JOY","LOVE","OPTIMISM","PRIDE","RELIEF"]);
+  const valence = NEGATIVE_EMOTIONS.has(article.sentiment) ? "negative"
+                : POSITIVE_EMOTIONS.has(article.sentiment) ? "positive"
+                : "neutral";
+  const badgeClass = { positive: "badge-positive", negative: "badge-negative", neutral: "badge-neutral" }[valence];
+  const icon       = { positive: ICONS.thumbUp, negative: ICONS.thumbDown, neutral: ICONS.meh }[valence];
 
   // Highlight first two words
   const idx = article.headline.indexOf(article.firstWord);
@@ -189,24 +202,56 @@ function buildCard(article) {
     esc(article.headline.slice(idx + article.firstWord.length));
   }
 
-  const actorTags = article.actors.map(a => `<span class="actor-tag">${esc(a)}</span>`).join("");
-  const urlLine   = article.url ? `<div class="card-url"><a href="${esc(article.url)}" target="_blank" rel="noopener">Read original article ↗</a></div>` : "";
+  // Retrieve the actors strings, and their ROLE (passive, active, mentionned)
+  // TODO:
+  // For the highlight, I image you're going to need to find in the headline the string
+  // corresponding to the a.name
+  // I recommend to first lowercase both strings before comparison so there's no inequality problem
+  // because of case-sensitivity
+  const actorTags = article.actors.map(a =>
+    `<span class="actor-tag">${esc(a.name)} <em class="actor-role">${esc(a.role)}</em></span>`
+  ).join("");
 
+  // List the main focuses (categories of the perspective) among economy, policy, etc... as tags
+  const focusTags = (article.focus || []).map(f =>
+    `<span class="focus-tag">${esc(f)}</span>`
+  ).join("");
+
+  // List the biases identified in the headline as tags with their score
+  const biasTags = Object.entries(article.biases || {}).map(([bias, score]) =>
+    `<span class="bias-tag">${esc(bias)} <em class="bias-score">${score}/3</em></span>`
+  ).join("");
+
+  // URL of the article
+  const urlLine = article.url ? `<div class="card-url"><a href="${esc(article.url)}" target="_blank" rel="noopener">Read original article ↗</a></div>` : "";
+
+  // TODO: You'll want to add CSS for the new classes .focus-tag, .focus-tags, .bias-tag, .bias-tags, .bias-score, 
+  // and .meta-... labels, they can mirror your existing .actor-tag style.
+  // And custom icons eventually
+  // TODO 2: Maybe we can also add a page or a tooltip explaining what each field (focus, genre, bias, frame, tone intensity...)
+  // means when the user clicks on them ? because they might not be self-explanatory for everyone
+  // as well as what their possible values are.
+  // everything is defined in the prompt sent to the AI in analyzer/framing_analyzer btw
   const card = document.createElement("article");
   card.className = "result-card";
   card.innerHTML = `
   <div class="card-top">
-  <div class="source-info">
-  <div class="source-avatar">${esc(article.source.charAt(0))}</div>
-  <span class="source-name">${esc(article.source)}</span>
-  </div>
-  <div class="sentiment-badge ${badgeClass}">${icon} ${article.sentiment}</div>
+    <div class="source-info">
+      <div class="source-avatar">${esc(article.source.charAt(0))}</div>
+      <span class="source-name">${esc(article.source)}</span>
+    </div>
+    <div class="sentiment-badge ${badgeClass}">${icon} ${article.sentiment}</div>
   </div>
   <h3 class="card-headline">${headlineHTML}</h3>
+
   <div class="card-meta">
-  ${article.actors.length > 0 ? `<div class="meta-actors">${ICONS.tags}<div class="actor-tags">${actorTags}</div></div>` : ""}
-  <div class="meta-tone">${ICONS.brain}<span>Tone: ${esc(article.tone)}</span></div>
+    ${article.actors.length > 0 ? `<div class="meta-actors">${ICONS.tags}<div class="actor-tags">${actorTags}</div></div>` : ""}
+    <div class="meta-frame">${ICONS.brain}<span>Frame: ${esc(article.frame)}</span></div>
+    <div class="meta-genre">${ICONS.brain}<span>Genre: ${esc(article.genre)}</span></div>
+    ${focusTags ? `<div class="meta-focus"><span class="meta-label">Focus:</span><div class="focus-tags">${focusTags}</div></div>` : ""}
+    ${biasTags  ? `<div class="meta-biases"><span class="meta-label">Biases:</span><div class="bias-tags">${biasTags}</div></div>` : ""}
   </div>
+
   ${urlLine}
   <div class="card-footer">${buildStarRating(article)}</div>
   `;
@@ -282,7 +327,7 @@ function renderCharts(articles) {
 // ── Actors ─────────────────────────────────────────────────────
 function renderActors(articles) {
   const counts = {};
-  articles.forEach(a => a.actors.forEach(actor => { counts[actor] = (counts[actor] || 0) + 1; }));
+  articles.forEach(a => a.actors.forEach(actor => { const key = actor.name || actor; counts[key] = (counts[key] || 0) + 1; }));
   const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, 5);
 
   document.getElementById("actors-list").innerHTML = top.length > 0
