@@ -431,3 +431,45 @@ input, textarea { font-family: inherit; }
   color: var(--text-500);
   margin-top: 4px;
 }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   TOOLTIPS
+══════════════════════════════════════════════════════════════════ */
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+  border-bottom: 1px dotted currentColor;
+}
+
+.tooltip-wrapper:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-900);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  animation: fadeUp 0.2s ease both;
+}
+
+.tooltip-wrapper:hover::before {
+  content: "";
+  position: absolute;
+  bottom: 115%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--text-900);
+  z-index: 100;
+  pointer-events: none;
+}

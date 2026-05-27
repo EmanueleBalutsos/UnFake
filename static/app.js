@@ -10,6 +10,7 @@ let selectedSources    = [];
 let selectedSentiments = ["positive", "neutral", "negative"];
 let feedbackRating     = null;
 let pieChart           = null;
+let genreChart         = null;
 let barChart           = null;
 
 // ── SVG Icons ─────────────────────────────────────────────────
@@ -192,15 +193,22 @@ function buildCard(article) {
   const badgeClass = { positive: "badge-positive", negative: "badge-negative", neutral: "badge-neutral" }[valence];
   const icon       = { positive: ICONS.thumbUp, negative: ICONS.thumbDown, neutral: ICONS.meh }[valence];
 
-  // Highlight first two words
-  const idx = article.headline.indexOf(article.firstWord);
+  // Highlight important actors in the headline 
   let headlineHTML = esc(article.headline);
-  if (idx !== -1 && article.firstWord) {
-    headlineHTML =
-    esc(article.headline.slice(0, idx)) +
-    `<mark class="headline-highlight">${esc(article.firstWord)}</mark>` +
-    esc(article.headline.slice(idx + article.firstWord.length));
-  }
+  const headlineLower = article.headline.toLowerCase();
+
+  article.actors.forEach(actor => {
+    const actorLower = actor.name.toLowerCase();
+    const actorIndex = headlineLower.indexOf(actorLower);
+    
+    if (actorIndex !== -1) {
+      const actorText = article.headline.substring(actorIndex, actorIndex + actor.name.length);
+      headlineHTML = headlineHTML.replace(
+        new RegExp(`\\b${esc(actorText)}\\b`, 'gi'),
+        `<mark class="headline-highlight">${esc(actorText)}</mark>`
+      );
+    }
+  });
 
   // Retrieve the actors strings, and their ROLE (passive, active, mentionned)
   // TODO:
@@ -244,12 +252,23 @@ function buildCard(article) {
   </div>
   <h3 class="card-headline">${headlineHTML}</h3>
 
+  <div class="analysis-tags">
+    <span class="analysis-tag tag-frame">
+      <span class="tooltip-wrapper" data-tooltip="EPISODIC: Event-focused | THEMATIC: Context-focused">
+        Frame: ${esc(article.frame)}
+      </span>
+    </span>
+    <span class="analysis-tag tag-genre">
+      <span class="tooltip-wrapper" data-tooltip="INFORMATIVE: News report | OPINION: Editorial | ANALYTICAL: Deep dive | BREAKING: Urgent news">
+        Genre: ${esc(article.genre)}
+      </span>
+    </span>
+  </div>
+
   <div class="card-meta">
-    ${article.actors.length > 0 ? `<div class="meta-actors">${ICONS.tags}<div class="actor-tags">${actorTags}</div></div>` : ""}
-    <div class="meta-frame">${ICONS.brain}<span>Frame: ${esc(article.frame)}</span></div>
-    <div class="meta-genre">${ICONS.brain}<span>Genre: ${esc(article.genre)}</span></div>
-    ${focusTags ? `<div class="meta-focus"><span class="meta-label">Focus:</span><div class="focus-tags">${focusTags}</div></div>` : ""}
-    ${biasTags  ? `<div class="meta-biases"><span class="meta-label">Biases:</span><div class="bias-tags">${biasTags}</div></div>` : ""}
+    ${article.actors.length > 0 ? `<div class="meta-actors">${ICONS.tags}<div class="actor-tags">${actorTags.replace(/<span class="actor-tag">/g, '<span class="actor-tag"><span class="tooltip-wrapper" data-tooltip="ACTIVE: Involved in events | PASSIVE: Affected by events | MENTIONED: Referenced but not central">').replace(/<\/span><\/span>/g, '</span></span></span>')}</div></div>` : ""}
+    ${focusTags ? `<div class="meta-focus"><span class="meta-label">Focus:</span><div class="focus-tags">${focusTags.replace(/<span class="focus-tag">/g, '<span class="focus-tag"><span class="tooltip-wrapper" data-tooltip="Main perspective angle">').replace(/<\/span>/g, '</span></span>')}</div></div>` : ""}
+    ${biasTags  ? `<div class="meta-biases"><span class="meta-label">Biases:</span><div class="bias-tags">${biasTags.replace(/<span class="bias-tag">/g, '<span class="bias-tag"><span class="tooltip-wrapper" data-tooltip="Bias detected: Level indicates strength (1-3)">').replace(/<\/span><\/span>/g, '</span></span></span>')}</div></div>` : ""}
   </div>
 
   ${urlLine}
@@ -258,7 +277,7 @@ function buildCard(article) {
   return card;
 }
 
-// ── Star rating (Mostra il voto dell'Intelligenza Artificiale) ──
+// ── Star rating (Mostly vote from IA) ──
 function buildStarRating(article) {
   const intensity = article.tone_intensity || 3;
 
@@ -303,6 +322,38 @@ function renderCharts(articles) {
     data: {
       labels: toneLabels,
       datasets: [{ data: Object.values(toneCounts), backgroundColor: toneColors, borderWidth: 0, hoverOffset: 6 }],
+    },
+    options: {responsive: true,maintainAspectRatio: true,cutout: "65%",
+      plugins: {legend: {position: "bottom",align: "start",
+          labels: {usePointStyle: true,pointStyle: "circle",padding: 16,
+            font: { family: "'DM Sans'", size: 12 },
+            color: "#717182",
+          },
+        },
+      },
+    },
+  });
+
+  // Genre pie chart
+  const genreCounts = {};
+  articles.forEach(a => {
+    const g = (a.genre || "Unknown").trim();
+    genreCounts[g] = (genreCounts[g] || 0) + 1;
+  });
+
+  const genreColorPalette = [
+    "#8b5cf6", "#06b6d4", "#ec4899", "#84cc16", "#f97316",
+    "#4f46e5", "#10b981", "#f59e0b", "#f43f5e", "#64748b"
+  ];
+  const genreLabels = Object.keys(genreCounts);
+  const genreColors = genreLabels.map((_, i) => genreColorPalette[i % genreColorPalette.length]);
+
+  if (genreChart) genreChart.destroy();
+  genreChart = new Chart(document.getElementById("genre-chart"), {
+    type: "doughnut",
+    data: {
+      labels: genreLabels,
+      datasets: [{ data: Object.values(genreCounts), backgroundColor: genreColors, borderWidth: 0, hoverOffset: 6 }],
     },
     options: {responsive: true,maintainAspectRatio: true,cutout: "65%",
       plugins: {legend: {position: "bottom",align: "start",
