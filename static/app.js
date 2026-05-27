@@ -285,7 +285,7 @@ function renderCharts(articles) {
   // Tone pie
   const toneCounts = {};
   articles.forEach(a => {
-    const t = (a.tone || "Unknown").trim();
+    const t = (a.sentiment || "Unknown").trim();
     toneCounts[t] = (toneCounts[t] || 0) + 1;
   });
 
