@@ -1,12 +1,11 @@
-console.log("🚀 analytics.js: File caricato correttamente (Versione UI Pro)!");
+console.log("Analytics.js: File loaded correctly (UI Pro Version)!");
 
 async function loadAnalytics() {
     try {
         const response = await fetch('/api/analytics-data');
-        if (!response.ok) throw new Error("Errore HTTP");
+        if (!response.ok) throw new Error("HTTP Error");
 
         const data = await response.json();
-        //document.getElementById('avg-rating').innerText = (data.average_rating || 0) + "/10";
         const avg = data.average_rating || 0;
         const color = avg >= 8 ? "#10b981" : avg >= 5 ? "#f59e0b" : "#f43f5e";
         const remaining = 10 - avg;
@@ -54,7 +53,7 @@ async function loadAnalytics() {
             const sorted = [...stats].sort((a, b) => (b.count || 0) - (a.count || 0)).slice(0, 5);
 
             if (sorted.length === 0) {
-                leaderboard.innerHTML = "<p style='color: var(--text-400);'>Nessun dato presente.</p>";
+                leaderboard.innerHTML = "<p style='color: var(--text-400);'>No data available.</p>";
             } else {
                 sorted.forEach((t, i) => {
                     const medals = ["🥇", "🥈", "🥉"];
@@ -96,7 +95,7 @@ async function loadAnalytics() {
             const reviews = data.top_reviews || [];
 
             if (reviews.length === 0) {
-                reviewList.innerHTML = "<p style='color: var(--text-400);'>Nessuna recensione a 5 stelle trovata.</p>";
+                reviewList.innerHTML = "<p style='color: var(--text-400);'>No 5-star reviews found.</p>";
             } else {
                 reviews.forEach(r => {
                     const card = document.createElement('div');
@@ -114,7 +113,7 @@ async function loadAnalytics() {
                     card.innerHTML = `
                     <div style="display: inline-flex; align-items: center; justify-content: center; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px 16px; border-radius: 30px; margin-bottom: 15px;">
                     <span style="color: #047857; font-weight: 800; font-size: 0.9rem; letter-spacing: 0.5px;">RATING: ${r.rating}/10</span>
-                    <span style="color: #065f46; font-size: 0.9rem; border-left: 2px solid #a7f3d0; padding-left: 12px; margin-left: 12px; font-weight: 500;">su "${r.event_query}"</span>
+                    <span style="color: #065f46; font-size: 0.9rem; border-left: 2px solid #a7f3d0; padding-left: 12px; margin-left: 12px; font-weight: 500;">on "${r.event_query}"</span>
                     </div>
                     <p style="font-size: 1.15rem; color: #1f2937; font-style: italic; margin: 0; line-height: 1.6; text-align: center; max-width: 95%;">
                     "${r.comment}"
@@ -126,7 +125,7 @@ async function loadAnalytics() {
         }
 
     } catch (err) {
-        console.error("🚨 Errore JS:", err);
+        console.error("JS Error:", err);
     }
 }
 
