@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UnFake — About</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <style>
+    
+  </style>
+</head>
+<body class="app-root">
+
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo"><span class="logo-name">UnFake Analytics</span></div>
+      <nav class="header-nav">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/analytics" class="nav-link">Dashboard</a>
+        <a href="/about" class="nav-link active">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="about-wrap">
+
+      <h1>About</h1>
+      <p class="about-subtitle">
+        UnFake Analytics retrieves news headlines from multiple sources and runs them through an automated analysis pipeline.
+        Each headline is scored across the following dimensions.
+      </p>
+
+      <div class="analysis-card">
+
+        <div class="metric-block">
+          <h2>Frame</h2>
+          <p>The generic framing category describes the narrative angle a headline uses to present its subject.
+            Based on the paper 
+            <a href="https://arxiv.org/pdf/2508.17131">"The Power of Framing: How News Headlines Guide Search Behavior" by Amrit Poudel1, Maria Milkowski and Tim Weninger.</a>
+          </p>
+          <ul>
+            <li><strong>Conflict</strong> : Presents opposing actors, forces, or interpretations in tension.</li>
+            <li><strong>Game Strategy</strong> : Focuses on actors pursuing goals, gaining advantage, or mobilizing support.</li>
+            <li><strong>Thematic</strong> : Centers on a broader social/political issue or systemic concern.</li>
+            <li><strong>Human Interest</strong> : Tells the story through the personal experience of individuals directly affected by the issue.</li>
+            <li><strong>Episodic</strong> : Presents a specific event as an isolated occurrence without connecting it to wider trends or causes.</li>
+            <li><strong>Other</strong> : Headline does not fit any of the generic framing categories.</li>
+          </ul>
+        </div>
+
+        <hr class="about-divider" />
+
+        <div class="metric-block">
+          <h2>Genre</h2>
+          <p>The editorial intent behind the headline.</p>
+          <ul>
+            <li><strong>Informative</strong> : Straightforward reporting of facts and events with minimal interpretation.</li>
+            <li><strong>Investigative</strong> : Aims to expose hidden truths or systemic issues.</li>
+            <li><strong>Analytic</strong> : Explains causes, context, or implications beyond the immediate surface facts.</li>
+            <li><strong>Editorial</strong> : Persuasive, opinion-driven piece that expresses a viewpoint, argument, or endorsement.</li>
+            <li><strong>Entertainment</strong> : Lifestyle, culture, soft news primarily aimed at engaging or amusing the audience.</li>
+            <li><strong>Other</strong> : Headline does not clearly fit a standard category for the genre/intent.</li>
+          </ul>
+        </div>
+
+        <hr class="about-divider" />
+
+        <div class="metric-block">
+          <h2>Focus</h2>
+          <p>The evaluative perspective through which the topic is presented. Up to two focus areas are identified per headline.</p>
+          <ul>
+            <li><strong>Economic</strong> : Framed around financial cost, trade, economic growth, or fiscal impact.</li>
+            <li><strong>Resources</strong> : Centered on natural resources, energy, land, or supply chains.</li>
+            <li><strong>Morality</strong> : Raises ethical questions, values, or moral judgements.</li>
+            <li><strong>Fairness</strong> : Concerns justice, equality, rights, or distribution of outcomes.</li>
+            <li><strong>Legal</strong> : Involves legislation, regulation, court decisions, or legal accountability.</li>
+            <li><strong>Policy</strong> : Discusses government decisions, public policy, or institutional action.</li>
+            <li><strong>Crime</strong> : Relates to criminal activity, law enforcement, or public order.</li>
+            <li><strong>Security</strong> : Covers threats, conflict, military action, or national security.</li>
+            <li><strong>Health</strong> : Focuses on physical or mental health, medicine, or epidemiology.</li>
+            <li><strong>Quality of Life</strong> : Addresses quality of life, wellbeing, housing, or social conditions.</li>
+            <li><strong>Cultural Identity</strong> : Touches on cultural values, identity, religion, or social cohesion.</li>
+            <li><strong>Public Opinion</strong> : Highlights polls, popular sentiment, or public reaction.</li>
+            <li><strong>Political</strong> : Centers on electoral dynamics, party politics, or power relations.</li>
+            <li><strong>Other</strong> : Headline does not clearly fit a standard category for focus.</li>
+          </ul>
+        </div>
+
+        <hr class="about-divider" />
+
+        <div class="metric-block">
+          <h2>Biases</h2>
+          <p>Linguistic or structural patterns that may skew perception. Each detected bias is scored 1 (mild) to 3 (strong).</p>
+          <ul>
+            <li><strong>Political</strong> : Favors or disparages a political group, party, or ideology.</li>
+            <li><strong>Gender</strong> : Uses language that stereotypes or unequally represents genders.</li>
+            <li><strong>Cultural</strong> : Frames an issue through a specific cultural lens, marginalizing others.</li>
+            <li><strong>Age</strong> : Stereotypes or dismisses individuals based on their age group.</li>
+            <li><strong>Religion</strong> : Portrays a religious group or belief system in a skewed way.</li>
+            <li><strong>Disability</strong> : Uses language that stigmatizes or misrepresents people with disabilities.</li>
+            <li><strong>Statement</strong> : Presents an unverified claim or allegation as established fact.</li>
+            <li><strong>Omission</strong> : Leaves out key context or facts that would change the reader's interpretation.</li>
+            <li><strong>Sensationalism</strong> : Uses exaggerated or dramatic language to provoke a strong emotional reaction.</li>
+            <li><strong>Negativity</strong> : Disproportionately emphasizes negative aspects while ignoring positives.</li>
+            <li><strong>Subjective</strong> : Injects personal opinion or value-laden language into what should be neutral reporting.</li>
+            <li><strong>Ad hominem</strong> : Attacks a person's character rather than addressing the substance of the issue.</li>
+            <li><strong>Opinion</strong> : Presents an editorial opinion or judgement as if it were objective reporting.</li>
+          </ul>
+        </div>
+
+        <hr class="about-divider" />
+
+        <div class="metric-block">
+          <h2>Actors &amp; Agency</h2>
+          <p>Named entities detected in the headline, classified by the role they play in the reported event.</p>
+          <ul>
+            <li><strong>Active</strong> : Directly driving or performing the actions described in the headline.</li>
+            <li><strong>Passive</strong> : Affected by events but not the initiator of the actions.</li>
+            <li><strong>Mentioned</strong> : Referenced in the headline but not central to the described action.</li>
+          </ul>
+        </div>
+
+        <hr class="about-divider" />
+
+        <div class="metric-block">
+          <h2>Tone Intensity</h2>
+          <p>A 1-5 score reflecting the emotional charge of the headline's language, from neutral and factual (1) to strongly sensational (5).</p>
+        </div>
+
+        <hr class="about-divider" />
+
+        <div class="metric-block">
+          <h2>Emotion</h2>
+          <p>The dominant emotion conveyed by the headline, detected using a 
+            classifier trained on the <a href="https://www.kaggle.com/datasets/debarshichanda/goemotions">GoEmotions dataset</a> (27 categories + neutral). 
+            Examples: anger, fear, optimism, curiosity, sadness, admiration...</p>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>

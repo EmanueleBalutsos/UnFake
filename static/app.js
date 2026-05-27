@@ -24,6 +24,70 @@ const ICONS = {
   meh:       `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`,
 };
 
+// ── Tag Tooltips ───────────────────────────────────────────────
+const TAG_TOOLTIPS = {
+  frame: {
+    CONFLICT:       "Presents opposing actors, forces, or interpretations in tension.",
+    GAME_STRATEGY:  "Focuses on actors pursuing goals, gaining advantage, or mobilizing support",
+    THEMATIC:       "Centers on a broader social/political issue or systemic concern.",
+    HUMAN_INTEREST: "Tells the story through the personal experience of individuals directly affected by the issue.",
+    EPISODIC:       "Presents a specific event as an isolated occurrence without connecting it to wider trends or causes.",
+    OTHER:          "Headline does not fit any of the generic framing categories.",
+  },
+  genre: {
+    INFORMATIVE:    "Straightforward reporting of facts and events with minimal interpretation.",
+    INVESTIGATIVE:  "Aims to expose hidden truths or systemic issues.",
+    ANALYTIC:       "Explains causes, context, or implications beyond the immediate surface facts.",
+    EDITORIAL:      "Persuasive, opinion-driven piece that expresses a viewpoint, argument, or endorsement.",
+    ENTERTAINMENT:  "Lifestyle, culture, soft news primarily aimed at engaging or amusing the audience.",
+    OTHER:          "Headline does not clearly fit a standard category for the genre/intent.",
+  },
+  focus: {
+    ECONOMIC:       "Framed around financial cost, trade, economic growth, or fiscal impact.",
+    RESOURCES:      "Centered on natural resources, energy, land, or supply chains.",
+    MORALITY:       "Raises ethical questions, values, or moral judgements.",
+    FAIRNESS:       "Concerns justice, equality, rights, or distribution of outcomes.",
+    LEGAL:          "Involves legislation, regulation, court decisions, or legal accountability.",
+    POLICY:         "Discusses government decisions, public policy, or institutional action.",
+    CRIME:          "Relates to criminal activity, law enforcement, or public order.",
+    SECURITY:       "Covers threats, conflict, military action, or national security.",
+    HEALTH:         "Focuses on physical or mental health, medicine, or epidemiology.",
+    QOL:            "Addresses quality of life, wellbeing, housing, or social conditions.",
+    CULTURAL_ID:    "Touches on cultural values, identity, religion, or social cohesion.",
+    PUBLIC_OPINION: "Highlights polls, popular sentiment, or public reaction.",
+    POLITICAL:      "Centers on electoral dynamics, party politics, or power relations.",
+    OTHER:          "Headline does not clearly fit a standard category for focus.",
+  },
+  agency: {
+    ACTIVE:     "Directly driving or performing the actions described in the headline.",
+    PASSIVE:    "Affected by events but not the initiator of the actions.",
+    MENTIONNED: "Referenced in the headline but not central to the described action.",
+  },
+  bias: {
+    POLITICAL:      "Favors or disparages a political group, party, or ideology.",
+    GENDER:         "Uses language that stereotypes or unequally represents genders.",
+    CULTURAL:       "Frames an issue through a specific cultural lens, marginalizing others.",
+    AGE:            "Stereotypes or dismisses individuals based on their age group.",
+    RELIGION:       "Portrays a religious group or belief system in a skewed way.",
+    DISABILITY:     "Uses language that stigmatizes or misrepresents people with disabilities.",
+    STATEMENT:      "Presents an unverified claim or allegation as established fact.",
+    OMISSION:       "Leaves out key context or facts that would change the reader's interpretation.",
+    SENSATIONALISM: "Uses exaggerated or dramatic language to provoke a strong emotional reaction.",
+    NEGATIVITY:     "Disproportionately emphasizes negative aspects while ignoring positives.",
+    SUBJECTIVE:     "Injects personal opinion or value-laden language into what should be neutral reporting.",
+    ADHOMINEM:      "Attacks a person's character rather than addressing the substance of the issue.",
+    OPINION:        "Presents an editorial opinion or judgement as if it were objective reporting.",
+  },
+};
+
+const TONE_INTENSITY_TOOLTIP =
+  "1: Neutral, factual  ·  2: Mildly toned  ·  3: Moderately emotive  ·  4: Highly charged  ·  5: Strongly sensational";
+
+function tagTooltip(type, value) {
+  const map = TAG_TOOLTIPS[type] || {};
+  return map[(value || "").toUpperCase()] || "No description available.";
+}
+
 // ── DOM references ─────────────────────────────────────────────
 const searchSection  = document.getElementById("search-section");
 const resultsSection = document.getElementById("results-section");
@@ -217,17 +281,17 @@ function buildCard(article) {
   // I recommend to first lowercase both strings before comparison so there's no inequality problem
   // because of case-sensitivity
   const actorTags = article.actors.map(a =>
-    `<span class="actor-tag">${esc(a.name)} <em class="actor-role">${esc(a.role)}</em></span>`
+    `<span class="actor-tag">${esc(a.name)} <em class="actor-role"><span class="tooltip-wrapper" data-tooltip="${tagTooltip('agency', a.role)}">${esc(a.role)}</span></em></span>`
   ).join("");
 
   // List the main focuses (categories of the perspective) among economy, policy, etc... as tags
   const focusTags = (article.focus || []).map(f =>
-    `<span class="focus-tag">${esc(f)}</span>`
+    `<span class="focus-tag"><span class="tooltip-wrapper" data-tooltip="${tagTooltip('focus', f)}">${esc(f)}</span></span>`
   ).join("");
 
   // List the biases identified in the headline as tags with their score
   const biasTags = Object.entries(article.biases || {}).map(([bias, score]) =>
-    `<span class="bias-tag">${esc(bias)} <em class="bias-score">${score}/3</em></span>`
+    `<span class="bias-tag"><span class="tooltip-wrapper" data-tooltip="${tagTooltip('bias', bias)}">${esc(bias)} <em class="bias-score">${score}/3</em></span></span>`
   ).join("");
 
   // URL of the article
@@ -254,21 +318,21 @@ function buildCard(article) {
 
   <div class="analysis-tags">
     <span class="analysis-tag tag-frame">
-      <span class="tooltip-wrapper" data-tooltip="EPISODIC: Event-focused | THEMATIC: Context-focused">
+      <span class="tooltip-wrapper" data-tooltip="${tagTooltip('frame', article.frame)}">
         Frame: ${esc(article.frame)}
       </span>
     </span>
     <span class="analysis-tag tag-genre">
-      <span class="tooltip-wrapper" data-tooltip="INFORMATIVE: News report | OPINION: Editorial | ANALYTICAL: Deep dive | BREAKING: Urgent news">
+      <span class="tooltip-wrapper" data-tooltip="${tagTooltip('genre', article.genre)}">
         Genre: ${esc(article.genre)}
       </span>
     </span>
   </div>
 
   <div class="card-meta">
-    ${article.actors.length > 0 ? `<div class="meta-actors">${ICONS.tags}<div class="actor-tags">${actorTags.replace(/<span class="actor-tag">/g, '<span class="actor-tag"><span class="tooltip-wrapper" data-tooltip="ACTIVE: Involved in events | PASSIVE: Affected by events | MENTIONED: Referenced but not central">').replace(/<\/span><\/span>/g, '</span></span></span>')}</div></div>` : ""}
-    ${focusTags ? `<div class="meta-focus"><span class="meta-label">Focus:</span><div class="focus-tags">${focusTags.replace(/<span class="focus-tag">/g, '<span class="focus-tag"><span class="tooltip-wrapper" data-tooltip="Main perspective angle">').replace(/<\/span>/g, '</span></span>')}</div></div>` : ""}
-    ${biasTags  ? `<div class="meta-biases"><span class="meta-label">Biases:</span><div class="bias-tags">${biasTags.replace(/<span class="bias-tag">/g, '<span class="bias-tag"><span class="tooltip-wrapper" data-tooltip="Bias detected: Level indicates strength (1-3)">').replace(/<\/span><\/span>/g, '</span></span></span>')}</div></div>` : ""}
+    ${article.actors.length > 0 ? `<div class="meta-actors">${ICONS.tags}<div class="actor-tags">${actorTags}</div></div>` : ""}
+    ${focusTags ? `<div class="meta-focus"><span class="meta-label">Focus:</span><div class="focus-tags">${focusTags}</div></div>` : ""}
+    ${biasTags  ? `<div class="meta-biases"><span class="meta-label">Biases:</span><div class="bias-tags">${biasTags}</div></div>` : ""}
   </div>
 
   ${urlLine}
@@ -292,7 +356,7 @@ function buildStarRating(article) {
 
   return `
   <div class="star-rating">
-  <span class="rating-label">AI Tone Intensity: ${intensity}/5</span>
+  <span class="rating-label tooltip-wrapper" data-tooltip="${TONE_INTENSITY_TOOLTIP}">Tone Intensity: ${intensity}/5</span>
   <div class="stars">
   ${starsHtml}
   </div>

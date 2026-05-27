@@ -34,7 +34,7 @@ def print_analyses(analyses: List[Analysis], articles: List[Article]):
 
         print()
 
-async def analyze_headlines(articles: List[Article], useEmotionClassifier: bool = True) -> List[Analysis]:
+async def analyze_headlines(articles: List[Article], useEmotionClassifier: bool = True, verbose: bool = False) -> List[Analysis]:
     config = load_config()
 
     llm_config = config["llm_framing_analyzer"]
@@ -42,15 +42,15 @@ async def analyze_headlines(articles: List[Article], useEmotionClassifier: bool 
 
     analyses = await llm_framing_analysis(llm_config, articles)
     if not analyses:
-        print("Analysis failed. LLM providers may be temporarily unavailable.")
+        if verbose: print("Analysis failed. LLM providers may be temporarily unavailable.")
         return []
-    
-    print(f"{len(analyses)} analyses retrieved via LLM call. \n")
+
+    if verbose: print(f"{len(analyses)} analyses retrieved via LLM call. \n")
 
     if(useEmotionClassifier):
         analyze_emotions(emotions_config, articles, analyses)
-    
-    print_analyses(analyses, articles)
+
+    if verbose: print_analyses(analyses, articles)
     return analyses
 
 

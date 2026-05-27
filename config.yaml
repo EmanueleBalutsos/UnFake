@@ -3,7 +3,7 @@
 query_generator:
   provider: gemini
   api_key: ${GEMINI_API_KEY}
-  model: gemini-3.5-flash
+  model: gemini-3.1-flash-lite
   url: # leave empty to use the default endpoint
 
 # Model used for filtering the articles retrieved by the queries at run time
@@ -11,7 +11,7 @@ query_generator:
 llm_relevance_checker:
   provider: gemini
   api_key: ${GEMINI_API_KEY}
-  model: gemini-3.5-flash
+  model: gemini-3.1-flash-lite
   url: # leave empty to use the default endpoint
 
 # Model used for the framing analysis on the headlines at run time
@@ -19,7 +19,7 @@ llm_relevance_checker:
 llm_framing_analyzer:
   provider: gemini
   api_key: ${GEMINI_API_KEY}
-  model: gemini-3.5-flash
+  model: gemini-3.1-flash-lite
   url: # # leave empty to use the default endpoint
 
 # Deepseek at run time for framing analysis

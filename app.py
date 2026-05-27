@@ -1,10 +1,21 @@
 import os
+import re
 import sys
 import asyncio
+import argparse
 
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
+
+# Argument to print pipeline steps details (queries, articles gathered, analysis...)
+_parser = argparse.ArgumentParser(add_help=False)
+_parser.add_argument("--verbose", 
+                     action="store_true", 
+                     default=False,
+                     help="Print pipeline verbose output to terminal (generated queries, articles retrieved, analysis details...)")
+_args, _ = _parser.parse_known_args()
+VERBOSE = _args.verbose
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(BASE_DIR, "src"))
@@ -54,15 +65,26 @@ def index():
 def analytics_page():
     return render_template("analytics.html")
 
+@app.route("/about")
+def about_page():
+    return render_template("about.html")
+
+def sanitize_query(raw: str) -> str:
+    """Strip noisy characters, keeping only letters, digits, and spaces, so that the 
+       raw query can also be appended to the list of generated queries."""
+    cleaned = re.sub(r"[^a-zA-Z0-9\s]", " ", raw)
+    return re.sub(r"\s+", " ", cleaned).strip()
+
+
 @app.route("/search", methods=["GET", "POST"])
 def search():
     """Gathers and analyzes articles based on the search query."""
     if request.method == "POST":
         data = request.get_json() or {}
         # Fetching 'event' instead of 'q' to match the frontend request
-        event = data.get("event", data.get("q", "")).strip()
+        event = sanitize_query(data.get("event", data.get("q", "")))
     else:
-        event = request.args.get("event", request.args.get("q", "")).strip()
+        event = sanitize_query(request.args.get("event", request.args.get("q", "")))
 
     if not event:
         return jsonify({"error": "Missing search parameter"}), 400
@@ -70,18 +92,19 @@ def search():
     try:
         articles = asyncio.run(gather_articles(
             event=event,
-            num_queries=6,
-            page_size_per_query=4,
+            num_queries=5,
+            page_size_per_query=5,
             embedding_threshold=0.4,
             use_query_expansion=True,
             use_clustering=False,
-            use_llm_filter=True
+            use_llm_filter=True,
+            verbose=VERBOSE
         ))
 
         if not articles:
             return jsonify({"articles": []})
 
-        analyses = asyncio.run(analyze_headlines(articles, useEmotionClassifier=True))
+        analyses = asyncio.run(analyze_headlines(articles, useEmotionClassifier=True, verbose=VERBOSE))
 
         result = []
         for i, a in enumerate(articles):

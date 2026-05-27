@@ -443,6 +443,11 @@ input, textarea { font-family: inherit; }
   border-bottom: 1px dotted currentColor;
 }
 
+/* Elevate the wrapper's stacking context on hover so ::after paints above Canvas elements */
+.tooltip-wrapper:hover {
+  z-index: 1000;
+}
+
 .tooltip-wrapper:hover::after {
   content: attr(data-tooltip);
   position: absolute;
@@ -455,8 +460,10 @@ input, textarea { font-family: inherit; }
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 500;
-  white-space: nowrap;
-  z-index: 100;
+  white-space: normal;
+  width: max-content;
+  max-width: 260px;
+  z-index: 1001;
   box-shadow: var(--shadow-md);
   pointer-events: none;
   animation: fadeUp 0.2s ease both;
@@ -470,6 +477,77 @@ input, textarea { font-family: inherit; }
   transform: translateX(-50%);
   border: 5px solid transparent;
   border-top-color: var(--text-900);
-  z-index: 100;
+  z-index: 1001;
   pointer-events: none;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   ABOUT SECTION
+══════════════════════════════════════════════════════════════════ */
+
+.about-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+}
+
+.about-wrap h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-900);
+  margin-bottom: 6px;
+}
+
+.about-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-500);
+  line-height: 1.6;
+  margin-bottom: 36px;
+}
+
+.metric-block { margin-bottom: 28px; }
+.metric-block h2 {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--indigo-600);
+  margin-bottom: 8px;
+}
+
+.metric-block p {
+  font-size: 0.88rem;
+  color: var(--text-700);
+  line-height: 1.65;
+  margin-bottom: 10px;
+}
+
+.metric-block ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.metric-block li {
+  font-size: 0.86rem;
+  color: var(--text-700);
+  line-height: 1.6;
+}
+
+.metric-block li strong { color: var(--text-900); }
+
+.about-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
+}
+
+.metric-block a {
+  color: var(--indigo-600); 
+  text-decoration: underline;
 }
