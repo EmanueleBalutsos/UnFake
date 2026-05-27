@@ -227,6 +227,7 @@ input, textarea { font-family: inherit; }
   top: 80px;
   align-self: start;
 }
+
 .filters-title {
   display: flex; align-items: center; gap: 8px;
   font-size: .9rem; font-weight: 700; color: var(--text-900);
@@ -293,9 +294,9 @@ input, textarea { font-family: inherit; }
   letter-spacing: .06em; text-transform: uppercase;
   white-space: nowrap; flex-shrink: 0;
 }
-.badge-positive { color: var(--emerald-700); background: var(--emerald-50); border-color: var(--emerald-200); }
+/*.badge-positive { color: var(--emerald-700); background: var(--emerald-50); border-color: var(--emerald-200); }
 .badge-negative { color: var(--rose-700);    background: var(--rose-50);    border-color: var(--rose-200);    }
-.badge-neutral  { color: var(--slate-700);   background: var(--slate-50);   border-color: var(--slate-200);   }
+.badge-neutral  { color: var(--slate-700);   background: var(--slate-50);   border-color: var(--slate-200);   }*/
 
 .card-headline {
   font-family: "DM Serif Display", Georgia, serif;
@@ -317,6 +318,28 @@ input, textarea { font-family: inherit; }
 }
 .card-url { font-size: .75rem; margin-top: 8px; }
 .card-url a { color: var(--indigo-600); text-decoration: underline; }
+
+.analysis-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.analysis-tag {
+  font-size: 0.73rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 5px;
+  border: 1px solid;
+}
+
+.tag-frame  { color: #3C3489; background: #EEEDFE; border-color: #AFA9EC; }
+.tag-genre  { color: #0F6E56; background: #E1F5EE; border-color: #5DCAA5; }
+.tag-focus  { color: #185FA5; background: #E6F1FB; border-color: #85B7EB; }
+.tag-tone   { color: #854F0B; background: #FAEEDA; border-color: #EF9F27; }
+.tag-bias   { color: #993C1D; background: #FAECE7; border-color: #F0997B; }
 
 /* ══════════════════════════════════════════════════════════════════
    STAR RATING
@@ -347,10 +370,10 @@ input, textarea { font-family: inherit; }
    GLOBAL FEEDBACK
 ══════════════════════════════════════════════════════════════════ */
 .global-feedback-card {
-  margin-top: 48px; padding: 32px;
-  background: var(--surface); border: 1px solid var(--neutral-200);
-  border-radius: 12px; box-shadow: var(--shadow-sm);
-  animation: fadeUp .4s ease both;
+  margin-top: 28px; padding: 22px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  animation: fadeUp .4s ease both; max-width: 100%;
 }
 .global-feedback-card h3 { font-family: "DM Serif Display", Georgia, serif; font-size: 1.5rem; color: var(--text-900); margin-bottom: 24px; }
 .feedback-success p { color: #059669; font-weight: 500; font-size: 1.1rem; padding: 16px; background: #d1fae5; border-radius: 8px; text-align: center; }
@@ -388,3 +411,23 @@ input, textarea { font-family: inherit; }
 .skeleton-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
 .skeleton-line { background: var(--neutral-100); border-radius: 4px; margin-bottom: 10px; animation: pulse 1.4s ease infinite; }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+
+
+
+/* ══════════════════════════════════════════════════════════════════
+   FEEDBACK PAGE
+══════════════════════════════════════════════════════════════════ */
+
+.rating-circle-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.rating-circle-label {
+  font-size: 13px;
+  color: var(--text-500);
+  margin-top: 4px;
+}

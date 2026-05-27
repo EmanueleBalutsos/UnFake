@@ -6,7 +6,45 @@ async function loadAnalytics() {
         if (!response.ok) throw new Error("Errore HTTP");
 
         const data = await response.json();
-        document.getElementById('avg-rating').innerText = (data.average_rating || 0) + "/10";
+        //document.getElementById('avg-rating').innerText = (data.average_rating || 0) + "/10";
+        const avg = data.average_rating || 0;
+        const color = avg >= 8 ? "#10b981" : avg >= 5 ? "#f59e0b" : "#f43f5e";
+        const remaining = 10 - avg;
+
+        new Chart(document.getElementById("rating-circle"), {
+            type: "doughnut",
+            data: {
+                datasets: [{
+                data: [avg, remaining],
+                backgroundColor: [color, "#e9e9ed"],
+                borderWidth: 0,
+                hoverOffset: 0,
+            }]
+            },
+            options: {
+                responsive: false,
+                cutout: "72%",
+                plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false },
+                }
+            },
+            plugins: [{
+                id: "centerText",
+                beforeDraw(chart) {
+                const { ctx, chartArea: { width, height, left, top } } = chart;
+                ctx.save();
+                ctx.font = "700 28px DM Sans, sans-serif";
+                ctx.fillStyle = color;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(avg.toFixed(1) + "/10", left + width / 2, top + height / 2);
+                ctx.restore();
+                }
+            }]
+            });
+                    
+        
         document.getElementById('total-feedbacks').innerText = data.total || 0;
 
         const leaderboard = document.getElementById('leaderboard-list');
@@ -66,7 +104,7 @@ async function loadAnalytics() {
                     card.style.flexDirection = "column";
                     card.style.alignItems = "center";
                     card.style.width = "100%";
-                    card.style.maxWidth = "650px";
+                    card.style.maxWidth = "600px";
                     card.style.padding = "24px";
                     card.style.margin = "10px 0";
                     card.style.background = "rgba(79, 70, 229, 0.03)";
@@ -75,7 +113,7 @@ async function loadAnalytics() {
 
                     card.innerHTML = `
                     <div style="display: inline-flex; align-items: center; justify-content: center; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px 16px; border-radius: 30px; margin-bottom: 15px;">
-                    <span style="color: #047857; font-weight: 800; font-size: 0.9rem; letter-spacing: 0.5px;">RATING: ${r.rating}/10 ⭐</span>
+                    <span style="color: #047857; font-weight: 800; font-size: 0.9rem; letter-spacing: 0.5px;">RATING: ${r.rating}/10</span>
                     <span style="color: #065f46; font-size: 0.9rem; border-left: 2px solid #a7f3d0; padding-left: 12px; margin-left: 12px; font-weight: 500;">su "${r.event_query}"</span>
                     </div>
                     <p style="font-size: 1.15rem; color: #1f2937; font-style: italic; margin: 0; line-height: 1.6; text-align: center; max-width: 95%;">

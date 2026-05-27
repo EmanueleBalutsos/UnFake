@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UnFake — Feedback Dashboard</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body class="app-root">
     <header class="app-header">
@@ -18,13 +19,14 @@
     </header>
 
     <main class="main-content" style="display: flex; justify-content: center; padding: 40px 20px;">
-        <div class="results-grid" style="max-width: 900px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 30px;">
-
+        <div style="max-width: 900px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 30px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="analysis-card" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px;">
                     <h4 class="analysis-card-title">Global Average Rating</h4>
-                    <div id="avg-rating" style="font-size: 4rem; font-weight: 800; color: var(--indigo-600); margin: 10px 0;">--</div>
-                    <p style="color: var(--text-500);">Overall user satisfaction</p>
+                    <div class="rating-circle-wrap">
+                        <canvas id="rating-circle" width="140" height="140"></canvas>
+                        <p class="rating-circle-label">Overall user satisfaction</p>
+                    </div>
                 </div>
                 <div class="analysis-card" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px;">
                     <h4 class="analysis-card-title">Total Feedbacks</h4>
@@ -33,18 +35,21 @@
                 </div>
             </div>
 
-            <div class="analysis-card" style="text-align: center; padding: 30px;">
-                <h4 class="analysis-card-title" style="margin-bottom: 25px;">Top Searched Topics 🏆</h4>
-                <div id="leaderboard-list" style="display: flex; flex-direction: column; gap: 12px; align-items: center;">
-                    </div>
-            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
 
-            <div class="analysis-card" style="text-align: center; padding: 30px;">
-                <h4 class="analysis-card-title" style="margin-bottom: 25px;">Top User Reviews ⭐</h4>
-                <div id="top-reviews-list" style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
-                    </div>
-            </div>
+                <div class="analysis-card" style="text-align: center; padding: 30px;">
+                    <h4 class="analysis-card-title" style="margin-bottom: 25px;">Top Searched Topics</h4>
+                    <div id="leaderboard-list" style="display: flex; flex-direction: column; gap: 12px;">
+                        </div>
+                </div>
 
+                <div class="analysis-card" style="text-align: center; padding: 30px;">
+                    <h4 class="analysis-card-title" style="margin-bottom: 25px;">Top User Reviews</h4>
+                    <div id="top-reviews-list" style="display: flex; flex-direction: column; gap: 15px;">
+                        </div>
+                </div>
+
+            </div>
         </div>
     </main>
 

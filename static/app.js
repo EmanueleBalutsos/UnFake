@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
- *  app.js — Plain JavaScript replacing all TSX components
- *  Talks to Flask backend at the same origin (no localhost needed)
+ *  app.js — 
+ *  Talks to Flask backend at the same origin 
  ═ *══════════════════════════════════════════════════════════════ */
 
 // ── State ─────────────────────────────────────────────────────
@@ -74,7 +74,7 @@ async function handleSearch(query) {
                                                        actors:    a.actors    || [],
                                                        tone:      a.tone      || "Neutral",
                                                        tone_intensity: a.tone_intensity || 3, 
-                                                       firstWord: (a.title || "").split(" ").slice(0, 2).join(" "),
+                                                       firstWord: a.firstWord || a.key_phrase || "",
                                                        url:       a.url       || null,
                                                        description: a.description || "",
     }));
@@ -176,8 +176,8 @@ function renderResults() {
 
 // ── Result card ────────────────────────────────────────────────
 function buildCard(article) {
-  const badgeClass = { positive: "badge-positive", negative: "badge-negative", neutral: "badge-neutral" }[article.sentiment] || "badge-neutral";
-  const icon       = { positive: ICONS.thumbUp, negative: ICONS.thumbDown, neutral: ICONS.meh }[article.sentiment] || ICONS.meh;
+  //const badgeClass = { positive: "badge-positive", negative: "badge-negative", neutral: "badge-neutral" }[article.sentiment] || "badge-neutral";
+  //const icon       = { positive: ICONS.thumbUp, negative: ICONS.thumbDown, neutral: ICONS.meh }[article.sentiment] || ICONS.meh;
 
   // Highlight first two words
   const idx = article.headline.indexOf(article.firstWord);
@@ -189,23 +189,29 @@ function buildCard(article) {
     esc(article.headline.slice(idx + article.firstWord.length));
   }
 
-  const actorTags = article.actors.map(a => `<span class="actor-tag">${esc(a)}</span>`).join("");
-  const urlLine   = article.url ? `<div class="card-url"><a href="${esc(article.url)}" target="_blank" rel="noopener">Read original article ↗</a></div>` : "";
-
+  const actorTags = (article.actors || []).map(a => `<span class="actor-tag">${esc(a)}</span>`).join("");  const urlLine   = article.url ? `<div class="card-url"><a href="${esc(article.url)}" target="_blank" rel="noopener">Read original article ↗</a></div>` : "";
+  
+  const analysisTags = [
+    article.frame   ? `<span class="analysis-tag tag-frame">Frame: ${esc(article.frame)}</span>`   : "",
+    article.genre   ? `<span class="analysis-tag tag-genre">Genre: ${esc(article.genre)}</span>`   : "",
+    article.focus   ? `<span class="analysis-tag tag-focus">Focus: ${esc(article.focus)}</span>`   : "",
+    article.tone    ? `<span class="analysis-tag tag-tone">Tone: ${esc(article.tone)}</span>`      : "",
+    article.biases  ? `<span class="analysis-tag tag-bias">Bias: ${esc(article.biases)}</span>`    : "",
+  ].filter(Boolean).join("");
+  
   const card = document.createElement("article");
   card.className = "result-card";
   card.innerHTML = `
   <div class="card-top">
-  <div class="source-info">
-  <div class="source-avatar">${esc(article.source.charAt(0))}</div>
-  <span class="source-name">${esc(article.source)}</span>
-  </div>
-  <div class="sentiment-badge ${badgeClass}">${icon} ${article.sentiment}</div>
+    <div class="source-info">
+      <div class="source-avatar">${esc(article.source.charAt(0))}</div>
+      <span class="source-name">${esc(article.source)}</span>
+    </div>
   </div>
   <h3 class="card-headline">${headlineHTML}</h3>
   <div class="card-meta">
-  ${article.actors.length > 0 ? `<div class="meta-actors">${ICONS.tags}<div class="actor-tags">${actorTags}</div></div>` : ""}
-  <div class="meta-tone">${ICONS.brain}<span>Tone: ${esc(article.tone)}</span></div>
+  ${analysisTags ? `<div class="analysis-tags">${analysisTags}</div>` : ""}
+  ${actorTags ? `<div class="meta-actors">${ICONS.tags}<div class="actor-tags">${actorTags}</div></div>` : ""}
   </div>
   ${urlLine}
   <div class="card-footer">${buildStarRating(article)}</div>
@@ -237,22 +243,35 @@ function buildStarRating(article) {
 
 // ── Charts ─────────────────────────────────────────────────────
 function renderCharts(articles) {
-  // Sentiment pie
-  const sentCounts = {};
-  articles.forEach(a => { sentCounts[a.sentiment] = (sentCounts[a.sentiment] || 0) + 1; });
-  const sentColors = { positive: "#10b981", neutral: "#64748b", negative: "#f43f5e" };
+  // Tone pie
+  const toneCounts = {};
+  articles.forEach(a => {
+    const t = (a.tone || "Unknown").trim();
+    toneCounts[t] = (toneCounts[t] || 0) + 1;
+  });
+
+  // Auto-assign a color to each unique tone
+  const toneColorPalette = [
+    "#4f46e5", "#10b981", "#f59e0b", "#f43f5e", "#64748b",
+    "#8b5cf6", "#06b6d4", "#ec4899", "#84cc16", "#f97316"
+  ];
+  const toneLabels = Object.keys(toneCounts);
+  const toneColors = toneLabels.map((_, i) => toneColorPalette[i % toneColorPalette.length]);
 
   if (pieChart) pieChart.destroy();
   pieChart = new Chart(document.getElementById("pie-chart"), {
     type: "doughnut",
     data: {
-      labels: Object.keys(sentCounts),
-                       datasets: [{ data: Object.values(sentCounts), backgroundColor: Object.keys(sentCounts).map(k => sentColors[k] || "#a0a0b0"), borderWidth: 0, hoverOffset: 6 }],
+      labels: toneLabels,
+      datasets: [{ data: Object.values(toneCounts), backgroundColor: toneColors, borderWidth: 0, hoverOffset: 6 }],
     },
-    options: {
-      responsive: true, maintainAspectRatio: true, cutout: "65%",
-      plugins: {
-        legend: { position: "bottom", labels: { usePointStyle: true, pointStyle: "circle", padding: 16, font: { family: "'DM Sans'", size: 12 }, color: "#717182" } },
+    options: {responsive: true,maintainAspectRatio: true,cutout: "65%",
+      plugins: {legend: {position: "bottom",align: "start",
+          labels: {usePointStyle: true,pointStyle: "circle",padding: 16,
+            font: { family: "'DM Sans'", size: 12 },
+            color: "#717182",
+          },
+        },
       },
     },
   });
