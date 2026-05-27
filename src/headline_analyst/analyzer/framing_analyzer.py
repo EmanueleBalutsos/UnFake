@@ -69,7 +69,7 @@ Bias types (use integer ID as key):
     e.g. "This policy proves the government has failed citizens."
 
 2. AGENCY  →  "agency": [ {{ "name": "...", "role": ID }}, ... ]
-Extract all named and unnamed entities (persons, people, main grammatical subjects of the sentence, organizations, nations, groups, populations...).
+Extract all named and unnamed entities (persons, people, alive or non-alive entities as main grammatical subjects of the sentence, organizations, nations, groups, populations...).
 Assign each a role based on their grammatical and narrative function:
   2  ACTIVE    : Performs the action or drives the event described.
   1  PASSIVE   : Receives the action or is acted upon.
