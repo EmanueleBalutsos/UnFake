@@ -1,43 +1,8 @@
-# Headline-Frame-Analysis
+# UnFake
 
 # Setup the environment
 
 *Python version : 3.12.3*
-
-Project structure should look like this :
-
-```
-.
-├── README.md
-├── app.py
-├── .env
-├── .gitignore
-├── config.yaml
-├── firebase-credentials.json
-├── requirements.txt
-├── src
-│   ├── database
-│       └──...
-│   └── headline_analyst
-│       └──...
-└── templates
-    └── index.html
-```
-
-The virtual environment folder should **not** be committed to the Git repo. If dependencies are added, please update the `requirements.txt`.
-
-The `.env` and `firebase-credentials.json` files containing API keys should **not** be committed to the Git repo. Make sure both are listed in the `.gitignore`.
-
-
-
-## Clone repo
-
-```
-git clone https://github.com/EmanueleBalutsos/PM-unbubble.git
-```
-
-## Create virtual environment
-Navigate to the base of the `PM-unbubble` repository.
 
 ### Windows
 
@@ -101,7 +66,7 @@ pip freeze > requirements.txt
 ```
 
 ## Environment variables & API keys
-The `.env` file should be located at the base of the `PM-unbubble` folder, and it contains all the API tokens necessary for API dependencies. **It should never be committed to the remote repository.**
+The `.env` file should be located at the base of the project's folder, and it contains all the API tokens necessary for API dependencies. **It should never be committed to the remote repository.**
 
 To add environment variables in your own `.env` file :
 ```
@@ -143,12 +108,55 @@ GEMINI_API_KEY=... (your api key for Gemini)
 
 To get one, connect to a google account and generate an API key on : https://aistudio.google.com/api-keys
 
-### `firebase-credentials.json`
-
-This file is the private key for the firebase database where the satisfaction/neutrality poll answers are stored.
-
 ## Config at run time
 
 Models used at run time for the different AI-based tasks can be easily specified by only changing the `config.yaml` file.
 
 *Note: Currently, Only Gemini & Deepseek are available. While this tool is planned to be modular, concrete implementations for other LLM providers are not yet made.*
+
+## Firebase Configuration
+
+For the project to work correctly, you need a credentials file for administrative access to the Firebase database.
+
+### What is `firebase-credentials.json`?
+
+This file is a private key in JSON format that authorizes the Python backend to securely and programmatically read and write poll data to Firebase.
+
+### File Location
+
+The `firebase-credentials.json` file must be placed in the **base folder** of the `UnFake` project, at the same level as:
+- `.env`
+- `requirements.txt`
+- `config.yaml`
+
+### How to Get the File (Step-by-Step Guide)
+
+1. **Log in to Firebase Console**
+   - Go to [https://console.firebase.google.com/](https://console.firebase.google.com/)
+   - Sign in with your Google account
+
+2. **Select your project**
+   - Choose the Firebase project you're using for "UnFake"
+
+3. **Open Project Settings**
+   - Click the gear icon next to "Project Overview"
+   - Select **"Project settings"**
+
+4. **Go to the "Service accounts" tab**
+   - In the horizontal menu at the top, click on **"Service accounts"**
+
+5. **Generate a new private key**
+   - In the "Firebase Admin SDK" section, click **"Generate new private key"**
+   - In the dialog window, click **"Generate key"** to confirm
+
+6. **Rename and place the file**
+   - Your browser will download a file with a name similar to:  
+     `your-project-id-firebase-adminsdk-xxxxx-xxxxxxxxxx.json`
+   - **Rename** the file to: `firebase-credentials.json`
+   - **Move** the renamed file to the base folder of the `UnFake` project
+
+### ⚠️ Important – Security
+
+> **This file must never be committed to the Git repository.**
+
+The file contains a private key that would grant full access to your Firebase database.

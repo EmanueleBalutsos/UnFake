@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
- *  app.js — Plain JavaScript replacing all TSX components
- *  Talks to Flask backend at the same origin (no localhost needed)
+ *  app.js — 
+ *  Talks to Flask backend at the same origin 
  ═ *══════════════════════════════════════════════════════════════ */
 
 // ── State ─────────────────────────────────────────────────────
@@ -77,7 +77,7 @@ async function handleSearch(query) {
                                                        focuses:   a.focuses   || [],
                                                        genre:     a.genre      || "OTHER",
                                                        tone_intensity: a.tone_intensity || 3, 
-                                                       firstWord: (a.title || "").split(" ").slice(0, 2).join(" "),
+                                                       firstWord: a.firstWord || a.key_phrase || "",
                                                        url:       a.url       || null,
                                                        description: a.description || "",
     }));
@@ -282,22 +282,35 @@ function buildStarRating(article) {
 
 // ── Charts ─────────────────────────────────────────────────────
 function renderCharts(articles) {
-  // Sentiment pie
-  const sentCounts = {};
-  articles.forEach(a => { sentCounts[a.sentiment] = (sentCounts[a.sentiment] || 0) + 1; });
-  const sentColors = { positive: "#10b981", neutral: "#64748b", negative: "#f43f5e" };
+  // Tone pie
+  const toneCounts = {};
+  articles.forEach(a => {
+    const t = (a.tone || "Unknown").trim();
+    toneCounts[t] = (toneCounts[t] || 0) + 1;
+  });
+
+  // Auto-assign a color to each unique tone
+  const toneColorPalette = [
+    "#4f46e5", "#10b981", "#f59e0b", "#f43f5e", "#64748b",
+    "#8b5cf6", "#06b6d4", "#ec4899", "#84cc16", "#f97316"
+  ];
+  const toneLabels = Object.keys(toneCounts);
+  const toneColors = toneLabels.map((_, i) => toneColorPalette[i % toneColorPalette.length]);
 
   if (pieChart) pieChart.destroy();
   pieChart = new Chart(document.getElementById("pie-chart"), {
     type: "doughnut",
     data: {
-      labels: Object.keys(sentCounts),
-                       datasets: [{ data: Object.values(sentCounts), backgroundColor: Object.keys(sentCounts).map(k => sentColors[k] || "#a0a0b0"), borderWidth: 0, hoverOffset: 6 }],
+      labels: toneLabels,
+      datasets: [{ data: Object.values(toneCounts), backgroundColor: toneColors, borderWidth: 0, hoverOffset: 6 }],
     },
-    options: {
-      responsive: true, maintainAspectRatio: true, cutout: "65%",
-      plugins: {
-        legend: { position: "bottom", labels: { usePointStyle: true, pointStyle: "circle", padding: 16, font: { family: "'DM Sans'", size: 12 }, color: "#717182" } },
+    options: {responsive: true,maintainAspectRatio: true,cutout: "65%",
+      plugins: {legend: {position: "bottom",align: "start",
+          labels: {usePointStyle: true,pointStyle: "circle",padding: 16,
+            font: { family: "'DM Sans'", size: 12 },
+            color: "#717182",
+          },
+        },
       },
     },
   });
