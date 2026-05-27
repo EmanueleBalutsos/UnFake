@@ -160,3 +160,19 @@ The `firebase-credentials.json` file must be placed in the **base folder** of th
 > **This file must never be committed to the Git repository.**
 
 The file contains a private key that would grant full access to your Firebase database.
+
+# Launch
+
+Launch the web server with :
+
+```
+python app.py
+```
+
+Optional argument : `--verbose`.
+
+```
+python app.py --verbose
+```
+
+This argument displays the output of the query expansion/retrieval of articles/filtering/framing analysis pipeline in the terminal. It's disabled by default.
