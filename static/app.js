@@ -500,3 +500,32 @@ function esc(str) {
   .replace(/&/g,"&amp;").replace(/</g,"&lt;")
   .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
+
+
+// ── Trending topics on home page ───────────────────────────────
+async function loadTrending() {
+  try {
+    const res  = await fetch("/api/analytics-data");
+    if (!res.ok) return;
+    const data = await res.json();
+
+    const stats  = data.topic_stats || [];
+    const sorted = [...stats].sort((a, b) => (b.count || 0) - (a.count || 0)).slice(0, 6);
+    const list   = document.getElementById("trending-list");
+    if (!list || sorted.length === 0) return;
+
+    sorted.forEach(t => {
+      const chip = document.createElement("button");
+      chip.className   = "trending-chip";
+      chip.textContent = t.event_query;
+      // clicking a chip pre-fills the search and launches it
+      chip.addEventListener("click", () => handleSearch(t.event_query));
+      list.appendChild(chip);
+    });
+
+  } catch(e) {
+    // silently fail if analytics not available
+  }
+}
+
+loadTrending();

@@ -161,6 +161,50 @@ input, textarea { font-family: inherit; }
 .search-bar button:disabled { opacity: .65; }
 .spin { animation: spin .7s linear infinite; display: inline-block; }
 
+.trending-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 0 24px 48px;
+  animation: fadeUp 0.5s ease both;
+  animation-delay: 0.2s;
+}
+
+.trending-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-400);
+}
+
+.trending-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.trending-chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-700);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.trending-chip:hover {
+  background: var(--indigo-50);
+  border-color: var(--indigo-600);
+  color: var(--indigo-600);
+}
+
+
 /* ══════════════════════════════════════════════════════════════════
    RESULTS
 ══════════════════════════════════════════════════════════════════ */
@@ -551,3 +595,5 @@ input, textarea { font-family: inherit; }
   color: var(--indigo-600); 
   text-decoration: underline;
 }
+
+
