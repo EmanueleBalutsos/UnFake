@@ -246,9 +246,6 @@ function renderResults() {
 // ── Result card ────────────────────────────────────────────────
 function buildCard(article) {
 
-  // TODO:
-  // If you want custom badge classes and icons for each emotion (there's 28), have fun changing that.
-  // Look into models.py -> EmotionsEnum to know the key values to put instead of positive/negative/neutral
   const NEGATIVE_EMOTIONS = new Set(["ANGER","ANNOYANCE","DISAPPOINTMENT","DISAPPROVAL","DISGUST","EMBARRASSMENT","FEAR","GRIEF","NERVOUSNESS","REMORSE","SADNESS"]);
   const POSITIVE_EMOTIONS = new Set(["ADMIRATION","AMUSEMENT","APPROVAL","CARING","DESIRE","EXCITEMENT","GRATITUDE","JOY","LOVE","OPTIMISM","PRIDE","RELIEF"]);
   const valence = NEGATIVE_EMOTIONS.has(article.sentiment) ? "negative"
@@ -275,11 +272,6 @@ function buildCard(article) {
   });
 
   // Retrieve the actors strings, and their ROLE (passive, active, mentionned)
-  // TODO:
-  // For the highlight, I image you're going to need to find in the headline the string
-  // corresponding to the a.name
-  // I recommend to first lowercase both strings before comparison so there's no inequality problem
-  // because of case-sensitivity
   const actorTags = article.actors.map(a =>
     `<span class="actor-tag">${esc(a.name)} <em class="actor-role"><span class="tooltip-wrapper" data-tooltip="${tagTooltip('agency', a.role)}">${esc(a.role)}</span></em></span>`
   ).join("");
@@ -297,13 +289,6 @@ function buildCard(article) {
   // URL of the article
   const urlLine = article.url ? `<div class="card-url"><a href="${esc(article.url)}" target="_blank" rel="noopener">Read original article ↗</a></div>` : "";
 
-  // TODO: You'll want to add CSS for the new classes .focus-tag, .focus-tags, .bias-tag, .bias-tags, .bias-score, 
-  // and .meta-... labels, they can mirror your existing .actor-tag style.
-  // And custom icons eventually
-  // TODO 2: Maybe we can also add a page or a tooltip explaining what each field (focus, genre, bias, frame, tone intensity...)
-  // means when the user clicks on them ? because they might not be self-explanatory for everyone
-  // as well as what their possible values are.
-  // everything is defined in the prompt sent to the AI in analyzer/framing_analyzer btw
   const card = document.createElement("article");
   card.className = "result-card";
   card.innerHTML = `
