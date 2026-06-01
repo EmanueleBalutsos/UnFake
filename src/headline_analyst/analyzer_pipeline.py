@@ -29,8 +29,9 @@ def print_analyses(analyses: List[Analysis], articles: List[Article]):
             entities = ', '.join(f"{e.name} [{e.role.name}]" for e in analysis.agencies)
             print(f"    Entities: {entities}")
 
-        if analysis.main_emotion:
-            print(f"    Main Emotion : {analysis.main_emotion}")
+        if analysis.emotions:
+            emotions_str = " / ".join([str(e.label.name) for e in analysis.emotions])
+            print(f"    Emotions : {emotions_str}")
 
         print()
 

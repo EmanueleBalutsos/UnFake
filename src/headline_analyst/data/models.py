@@ -150,7 +150,7 @@ class Analysis:
     focus: List[Focus]
     genre: Genre
     tone_intensity: int # 1 - 5 score
-    main_emotion: Emotion | None = None
+    emotions: List[Emotion] = Field(default_factory=list)
 
     @classmethod
     def from_json(cls, data: dict):
@@ -168,7 +168,7 @@ class Analysis:
             focus = [Focus(int(k)) for k in data['focus']],
             genre = Genre(data['genre']),
             tone_intensity=data['tone'],
-            main_emotion=None
+            emotions=[]
         )
 
 # ------------------- CLASSES FOR THE FORMATTING OF JSON OUTPUTS FOR GEMINI ------------------------- #

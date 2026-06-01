@@ -18,7 +18,13 @@ def analyze_emotions(model_config: dict, articles: list[Article], analyses: list
 
     for a in analyses:
         output = model_outputs[a.headline_index]
-        a.main_emotion = Emotion(label=EmotionsEnum[output[0]["label"].upper()], score=output[0]["score"])
+        top_emotions = []
+        for i in range(min(2, len(output))):
+            label_str = output[i]["label"].upper()
+            score = output[i]["score"]
+            top_emotions.append(Emotion(label=EmotionsEnum[label_str], score=score))
+
+        a.emotions = top_emotions
 
 async def llm_framing_analysis(analyzer_config: dict, articles: list[Article]) -> list[Analysis]:
     """

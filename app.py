@@ -115,7 +115,7 @@ def search():
             biases_val = {} # types of biases identified in the headline
             focuses_val = [] # focuses (category of the perspective) among economy, policy, etc...
             genre_val = "OTHER" # main genre of the headline among informative, editorial etc...
-            sentiment_val = "NEUTRAL" # main emotion
+            sentiment_val = ["NEUTRAL"] # main emotion
             intensity_val = 3 # tone intensity score from 1 to 5
 
             if analysis:
@@ -129,8 +129,8 @@ def search():
                     genre_val = analysis.genre.name
                 if hasattr(analysis, "tone_intensity"):
                     intensity_val = analysis.tone_intensity
-                if hasattr(analysis, "main_emotion") and analysis.main_emotion:
-                    sentiment_val = analysis.main_emotion.label.name
+                if hasattr(analysis, "emotions") and analysis.emotions:
+                    sentiment_val = [e.label.name for e in analysis.emotions]
                 if hasattr(analysis, "biases") and analysis.biases:
                     biases_val = {b.name: score for b, score in analysis.biases.items()} if analysis.biases else {}
 
