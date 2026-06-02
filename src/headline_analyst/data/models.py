@@ -81,7 +81,7 @@ class EmotionsEnum(Enum):
     DISAPPROVAL = 11
     DISGUST = 12
     EMBARASSMENT = 13
-    EXCITMENT = 14
+    EXCITEMENT = 14
     FEAR = 15
     GRATITUDE = 16
     GRIEF = 17
