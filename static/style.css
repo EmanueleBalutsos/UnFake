@@ -1,7 +1,5 @@
-/* ── Google Fonts ──────────────────────────────────────────────── */
 @import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700;800&display=swap");
 
-/* ── CSS Variables ─────────────────────────────────────────────── */
 :root {
   --bg:           #fafafb;
   --surface:      #ffffff;
@@ -31,7 +29,6 @@
   --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
 }
 
-/* ── Reset ─────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; }
 body {
@@ -45,7 +42,6 @@ a { color: inherit; text-decoration: none; }
 button { cursor: pointer; font-family: inherit; }
 input, textarea { font-family: inherit; }
 
-/* ── Animations ────────────────────────────────────────────────── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -54,9 +50,6 @@ input, textarea { font-family: inherit; }
   to { transform: rotate(360deg); }
 }
 
-/* ══════════════════════════════════════════════════════════════════
- *  HEADER
- ═ *═════════════════════════════════════════════════════════════════ */
 .app-header {
   position: sticky;
   top: 0;
@@ -91,15 +84,9 @@ input, textarea { font-family: inherit; }
 .nav-link:hover  { color: var(--text-900); }
 .nav-link.active { color: var(--indigo-600); }
 
-/* ══════════════════════════════════════════════════════════════════
- *  LAYOUT
- ═ *═════════════════════════════════════════════════════════════════ */
 .app-root { min-height: 100vh; background: var(--bg); }
 .main-container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
 
-/* ══════════════════════════════════════════════════════════════════
- *  SEARCH SECTION
- ═ *═════════════════════════════════════════════════════════════════ */
 .search-section {
   display: flex;
   flex-direction: column;
@@ -136,7 +123,7 @@ input, textarea { font-family: inherit; }
   border: 1.5px solid var(--neutral-200);
   border-radius: 999px;
   background: var(--surface);
-  padding: 16px 148px 16px 52px;
+  padding: 16px 200px 16px 52px;
   font-size: 1rem;
   color: var(--text-900);
   box-shadow: var(--shadow-sm);
@@ -200,9 +187,6 @@ input, textarea { font-family: inherit; }
   color: var(--indigo-600);
 }
 
-/* ══════════════════════════════════════════════════════════════════
- *  RESULTS
- ═ *═════════════════════════════════════════════════════════════════ */
 .results-wrapper { padding: 36px 0 64px; animation: fadeUp .4s ease both; }
 .results-topbar {
   display: flex; flex-wrap: wrap;
@@ -224,7 +208,7 @@ input, textarea { font-family: inherit; }
   width: 100%;
   border: 1.5px solid var(--neutral-200); border-radius: 999px;
   background: var(--surface);
-  padding: 10px 100px 10px 18px;
+  padding: 10px 150px 10px 18px;
   font-size: .875rem; color: var(--text-900);
   box-shadow: var(--shadow-sm); outline: none;
   transition: border-color .2s, box-shadow .2s;
@@ -253,9 +237,6 @@ input, textarea { font-family: inherit; }
 .no-results { text-align: center; padding: 60px 0; color: var(--text-400); font-size: .95rem; }
 .error-message { color: var(--rose-700); background: var(--rose-50); border: 1px solid var(--rose-200); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: .9rem; }
 
-/* ══════════════════════════════════════════════════════════════════
- *  FILTERS
- ═ *═════════════════════════════════════════════════════════════════ */
 .filters-panel {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -265,6 +246,13 @@ input, textarea { font-family: inherit; }
   position: sticky;
   top: 80px;
   align-self: start;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.filters-panel::-webkit-scrollbar {
+  display: none;
 }
 
 .filters-title {
@@ -293,9 +281,6 @@ input, textarea { font-family: inherit; }
 .filter-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .capitalize { text-transform: capitalize; }
 
-/* ══════════════════════════════════════════════════════════════════
- *  RESULT CARD
- ═ *═════════════════════════════════════════════════════════════════ */
 .result-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -377,9 +362,6 @@ input, textarea { font-family: inherit; }
 .tag-tone   { color: #854F0B; background: #FAEEDA; border-color: #EF9F27; }
 .tag-bias   { color: #993C1D; background: #FAECE7; border-color: #F0997B; }
 
-/* ══════════════════════════════════════════════════════════════════
- *  STAR RATING
- ═ *═════════════════════════════════════════════════════════════════ */
 .card-footer { border-top: 1px solid var(--border-light); padding-top: 12px; margin-top: 12px; }
 .star-rating { display: flex; align-items: center; justify-content: space-between; }
 .rating-label { font-size: .78rem; color: var(--text-500); }
@@ -388,10 +370,20 @@ input, textarea { font-family: inherit; }
 .star.filled { color: #f59e0b; }
 .rating-done { font-size: .78rem; color: var(--emerald-700); }
 
-/* ══════════════════════════════════════════════════════════════════
- *  ANALYSIS SECTION
- ═ *═════════════════════════════════════════════════════════════════ */
-.analysis-col { display: flex; flex-direction: column; gap: 20px; }
+.analysis-col {
+  display: flex; flex-direction: column; gap: 20px;
+  position: sticky;
+  top: 80px;
+  align-self: start;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.analysis-col::-webkit-scrollbar {
+  display: none;
+}
+
 .analysis-card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow-sm);
@@ -402,9 +394,6 @@ input, textarea { font-family: inherit; }
 .actor-chip { display: flex; align-items: center; gap: 7px; background: var(--neutral-100); border-radius: 8px; padding: 6px 12px; font-size: .82rem; font-weight: 500; color: var(--text-700); }
 .actor-chip-count { width: 20px; height: 20px; border-radius: 50%; background: var(--neutral-200); display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 700; color: var(--text-500); }
 
-/* ══════════════════════════════════════════════════════════════════
- *  GLOBAL FEEDBACK
- ═ *═════════════════════════════════════════════════════════════════ */
 .global-feedback-card {
   margin-top: 28px; padding: 22px;
   background: var(--surface); border: 1px solid var(--border);
@@ -442,15 +431,11 @@ input, textarea { font-family: inherit; }
 .submit-feedback-btn:hover:not(:disabled) { background: var(--indigo-700); }
 .submit-feedback-btn:disabled { background: var(--neutral-200); color: var(--text-500); cursor: not-allowed; }
 
-/* ── Loading Skeleton ──────────────────────────────────────────── */
 .loading-cards { display: flex; flex-direction: column; gap: 14px; }
 .skeleton-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
 .skeleton-line { background: var(--neutral-100); border-radius: 4px; margin-bottom: 10px; animation: pulse 1.4s ease infinite; }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
 
-/* ══════════════════════════════════════════════════════════════════
- *  FEEDBACK PAGE
- ═ *═════════════════════════════════════════════════════════════════ */
 .rating-circle-wrap {
   display: flex;
   flex-direction: column;
@@ -464,9 +449,6 @@ input, textarea { font-family: inherit; }
   margin-top: 4px;
 }
 
-/* ══════════════════════════════════════════════════════════════════
- *  TOOLTIPS
- ═ *═════════════════════════════════════════════════════════════════ */
 .tooltip-wrapper {
   position: relative;
   display: inline-block;
@@ -508,9 +490,6 @@ input, textarea { font-family: inherit; }
   pointer-events: none;
 }
 
-/* ══════════════════════════════════════════════════════════════════
- *  ABOUT SECTION
- ═ *═════════════════════════════════════════════════════════════════ */
 .about-wrap {
   max-width: 720px;
   margin: 0 auto;
@@ -568,12 +547,11 @@ input, textarea { font-family: inherit; }
   text-decoration: underline;
 }
 
-/* ── Country Select Styles ─────────────────────────────────────── */
 .country-select {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  right: 120px; /* Spazio sufficiente per il bottone principale */
+  right: 120px;
   border: none;
   background: transparent;
   color: var(--text-700);
@@ -582,7 +560,7 @@ input, textarea { font-family: inherit; }
   font-size: 1rem;
   outline: none;
   cursor: pointer;
-  appearance: none; /* Nasconde la freccia di default su alcuni browser per un look più pulito */
+  appearance: none;
 }
 
 .country-select option {
@@ -590,15 +568,6 @@ input, textarea { font-family: inherit; }
 }
 
 .inline-search .country-select {
-  right: 85px; /* Spazio per il bottone inline più piccolo */
+  right: 85px;
   font-size: 0.85rem;
-}
-
-/* Aggiorniamo il padding degli input per fare spazio alla tendina ed evitare che il testo si sovrapponga */
-.search-bar input {
-  padding: 16px 200px 16px 52px; /* Aumentato il padding-right */
-}
-
-.inline-search input {
-  padding: 10px 150px 10px 18px; /* Aumentato il padding-right */
 }
