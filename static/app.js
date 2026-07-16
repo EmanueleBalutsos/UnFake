@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════
- * app.js —
+ * app.js
  * Talks to Flask backend at the same origin
- ═ *═══════════*═══════════════════════════════════════════════════ */
+ ═ *═══════════**═══════════════════════════════════════════════════ */
 
 // ── State ─────────────────────────────────────────────────────
 let currentQuery       = "";
@@ -89,7 +89,7 @@ const TONE_INTENSITY_TOOLTIP =
       return map[(value || "").toUpperCase()] || "No description available.";
     }
 
-    // ── DOM references ─────────────────────────────────────────────
+    // ── DOM References ─────────────────────────────────────────────
     const searchSection  = document.getElementById("search-section");
     const resultsSection = document.getElementById("results-section");
     const mainSearchInput  = document.getElementById("main-search-input");
@@ -104,28 +104,30 @@ const TONE_INTENSITY_TOOLTIP =
     const feedbackSection = document.getElementById("feedback-section");
 
     // ── Search ─────────────────────────────────────────────────────
-    async function handleSearch(query) {
+    async function handleSearch(query, country = "US") {
       if (!query.trim()) return;
 
       currentQuery    = query;
       feedbackRating  = null;
 
-      // Switch to results view
       searchSection.style.display  = "none";
       resultsSection.style.display = "block";
       queryLabel.textContent       = `"${query}"`;
       inlineSearchInput.value      = query;
+
+      document.getElementById("inline-country-select").value = country;
+      document.getElementById("main-country-select").value = country;
+
       errorMsg.style.display       = "none";
       feedbackSection.style.display = "none";
 
-      // Show skeletons while loading
       showSkeletons();
 
       try {
         const res  = await fetch("/search", {
           method:  "POST",
           headers: { "Content-Type": "application/json" },
-          body:    JSON.stringify({ event: query }),
+          body:    JSON.stringify({ event: query, country: country }),
         });
 
         if (!res.ok) throw new Error("Search failed");
@@ -134,22 +136,21 @@ const TONE_INTENSITY_TOOLTIP =
 
         allArticles = (data.articles || []).map((a, i) => ({
           id:          a.url || String(i),
-                                                           headline:  a.title || a.headline || "No Title",
-                                                           source:    a.source || "Unknown Source",
-                                                           sentiment: Array.isArray(a.sentiment) ? a.sentiment : [a.sentiment || "NEUTRAL"],
-                                                           actors:    a.actors    || [],
-                                                           frame:     a.frame     || "OTHER",
-                                                           biases:    a.biases    || {},
-                                                           focuses:   a.focuses   || [],
-                                                           genre:     a.genre      || "OTHER",
+                                                           headline:    a.title || a.headline || "No Title",
+                                                           source:      a.source || "Unknown Source",
+                                                           sentiment:   Array.isArray(a.sentiment) ? a.sentiment : [a.sentiment || "NEUTRAL"],
+                                                           actors:      a.actors    || [],
+                                                           frame:       a.frame     || "OTHER",
+                                                           biases:      a.biases    || {},
+                                                           focuses:     a.focuses   || [],
+                                                           genre:       a.genre      || "OTHER",
                                                            tone_intensity: a.tone_intensity || 3,
-                                                           firstWord: a.firstWord || a.key_phrase || "",
-                                                           url:       a.url       || null,
+                                                           firstWord:   a.firstWord || a.key_phrase || "",
+                                                           url:         a.url       || null,
                                                            description: a.description || "",
         }));
 
-        // Auto-select all sources from fresh results
-        selectedSources    = [...new Set(allArticles.map(a => a.source))];
+        selectedSources = [...new Set(allArticles.map(a => a.source))];
         const emotionsSet = new Set();
         allArticles.forEach(a => {
           if (Array.isArray(a.sentiment)) {
@@ -193,7 +194,6 @@ const TONE_INTENSITY_TOOLTIP =
     function buildFilters() {
       const sources = [...new Set(allArticles.map(a => a.source))];
 
-      // Source checkboxes
       sourceFilters.innerHTML = `<p class="filter-group-label">Source</p>`;
       sources.forEach(src => {
         const label = document.createElement("label");
@@ -202,13 +202,11 @@ const TONE_INTENSITY_TOOLTIP =
         label.querySelector("input").addEventListener("change", () => {
           toggleFilter(selectedSources, src);
           renderResults();
-          // rebuild to keep checkbox state in sync
           buildFilters();
         });
         sourceFilters.appendChild(label);
       });
 
-      // Emotion checkboxes — values are dynamic emotion names from results
       const emotionsSet = new Set();
       allArticles.forEach(a => {
         if (Array.isArray(a.sentiment)) {
@@ -217,6 +215,7 @@ const TONE_INTENSITY_TOOLTIP =
           emotionsSet.add(a.sentiment);
         }
       });
+
       const emotions = [...emotionsSet];
       sentimentFilters.innerHTML = `<p class="filter-group-label">Emotion</p>`;
       emotions.forEach(s => {
@@ -238,7 +237,7 @@ const TONE_INTENSITY_TOOLTIP =
       else arr.splice(idx, 1);
     }
 
-    // ── Render results ─────────────────────────────────────────────
+    // ── Render Results ─────────────────────────────────────────────
     function renderResults() {
       const filtered = allArticles.filter(a =>
       selectedSources.includes(a.source) &&
@@ -260,9 +259,8 @@ const TONE_INTENSITY_TOOLTIP =
       renderActors(filtered);
     }
 
-    // ── Result card ────────────────────────────────────────────────
+    // ── Result Card ────────────────────────────────────────────────
     function buildCard(article) {
-
       const NEGATIVE_EMOTIONS = new Set(["ANGER","ANNOYANCE","DISAPPOINTMENT","DISAPPROVAL","DISGUST","EMBARRASSMENT","FEAR","GRIEF","NERVOUSNESS","REMORSE","SADNESS"]);
       const POSITIVE_EMOTIONS = new Set(["ADMIRATION","AMUSEMENT","APPROVAL","CARING","DESIRE","EXCITEMENT","GRATITUDE","JOY","LOVE","OPTIMISM","PRIDE","RELIEF"]);
 
@@ -275,7 +273,6 @@ const TONE_INTENSITY_TOOLTIP =
       const icon       = { positive: ICONS.thumbUp, negative: ICONS.thumbDown, neutral: ICONS.meh }[valence];
       const displaySentiment = Array.isArray(article.sentiment) ? article.sentiment.join(" / ") : article.sentiment;
 
-      // Highlight important actors in the headline
       let headlineHTML = esc(article.headline);
       const headlineLower = article.headline.toLowerCase();
 
@@ -292,22 +289,14 @@ const TONE_INTENSITY_TOOLTIP =
         }
       });
 
-      // Retrieve the actors strings, and their ROLE (passive, active, mentionned)
       const actorTags = article.actors.map(a =>
       `<span class="actor-tag">${esc(a.name)} <em class="actor-role"><span class="tooltip-wrapper" data-tooltip="${tagTooltip('agency', a.role)}">${esc(a.role)}</span></em></span>`
       ).join("");
 
-      // List the main focuses (categories of the perspective) among economy, policy, etc... as tags
       const focusTags = (article.focus || []).map(f =>
       `<span class="focus-tag"><span class="tooltip-wrapper" data-tooltip="${tagTooltip('focus', f)}">${esc(f)}</span></span>`
       ).join("");
 
-      // List the biases identified in the headline as tags with their score
-      const biasTags = Object.entries(article.biases || {}).map(([bias, score]) =>
-      `<span class="bias-tag"><span class="tooltip-wrapper" data-tooltip="${tagTooltip('bias', bias)}">${esc(bias)} <em class="bias-score">${score}/3</em></span></span>`
-      ).join("");
-
-      // URL of the article
       const urlLine = article.url ? `<div class="card-url"><a href="${esc(article.url)}" target="_blank" rel="noopener">Read original article ↗</a></div>` : "";
 
       const card = document.createElement("article");
@@ -336,18 +325,33 @@ const TONE_INTENSITY_TOOLTIP =
       </div>
 
       <div class="card-meta">
-      ${article.actors.length > 0 ? `<div class="meta-actors">${ICONS.tags}<div class="actor-tags">${actorTags}</div></div>` : ""}
-      ${focusTags ? `<div class="meta-focus"><span class="meta-label">Focus:</span><div class="focus-tags">${focusTags}</div></div>` : ""}
-      ${biasTags  ? `<div class="meta-biases"><span class="meta-label">Biases:</span><div class="bias-tags">${biasTags}</div></div>` : ""}
-      </div>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 8px; width: 100%;">
+      ${article.actors.length > 0 ? `
+        <div class="meta-actors" style="margin: 0; display: inline-flex; align-items: center;">
+        ${ICONS.tags}
+        <div class="actor-tags" style="display: flex; gap: 4px; flex-wrap: wrap; margin-left: 6px;">
+        ${actorTags}
+        </div>
+        </div>` : ""}
 
-      ${urlLine}
-      <div class="card-footer">${buildStarRating(article)}</div>
-      `;
-      return card;
+        <div class="meta-biases-colored" style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <span style="font-size: 12px; font-weight: bold; color: #475569;">Biases:</span>
+        <div style="display: inline-flex; gap: 6px; flex-wrap: wrap;">
+        ${buildBiasTags(article.biases)}
+        </div>
+        </div>
+        </div>
+
+        ${focusTags ? `<div class="meta-focus" style="margin-top: 4px;"><span class="meta-label">Focus:</span><div class="focus-tags">${focusTags}</div></div>` : ""}
+        </div>
+
+        ${urlLine}
+        <div class="card-footer">${buildStarRating(article)}</div>
+        `;
+        return card;
     }
 
-    // ── Now tone Intensity bar (Mostly vote from IA) ──
+    // ── Tone Intensity Bar ─────────────────────────────────────────
     function buildStarRating(article) {
       const intensity = article.tone_intensity || 3;
 
@@ -371,11 +375,34 @@ const TONE_INTENSITY_TOOLTIP =
       </div>`;
     }
 
+    // ── Build Colored Bias Tags ────────────────────────────────────
+    function buildBiasTags(biasesObj) {
+      if (!biasesObj || Object.keys(biasesObj).length === 0) {
+        return '<span style="font-size: 12px; color: #64748b; font-style: italic;">No bias detected</span>';
+      }
+
+      return Object.entries(biasesObj).map(([bias, score]) => {
+        let intensityLabel = 'Low';
+        let color = '#3b82f6';
+
+        if (score === 2) {
+          intensityLabel = 'Med';
+          color = '#f59e0b';
+        } else if (score === 3) {
+          intensityLabel = 'High';
+          color = '#ef4444';
+        }
+
+        return `
+        <span style="display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 12px; background-color: ${color}15; color: ${color}; font-size: 12px; font-weight: 600; border: 1px solid ${color}30;">
+        ${bias} <span style="opacity: 0.7; margin-left: 4px; font-size: 10px;">(${intensityLabel})</span>
+        </span>`;
+      }).join('');
+    }
+
     // ── Charts ─────────────────────────────────────────────────────
     function renderCharts(articles) {
-      // Primary Emotion pie
       const primaryEmotionCounts = {};
-      // Secondary Emotion pie
       const secondaryEmotionCounts = {};
 
       articles.forEach(a => {
@@ -412,24 +439,22 @@ const TONE_INTENSITY_TOOLTIP =
           labels: primaryLabels,
           datasets: [{ data: Object.values(primaryEmotionCounts), backgroundColor: primaryColors, borderWidth: 0, hoverOffset: 6 }],
         },
-        options: {responsive: true,maintainAspectRatio: false,cutout: "65%",
-          plugins: {legend: {position: "bottom",align: "start",
-            labels: {usePointStyle: true,pointStyle: "circle",padding: 16,
-              font: { family: "'DM Sans'", size: 12 },
-              color: "#717182",
+        options: {
+          responsive: true, maintainAspectRatio: false, cutout: "65%",
+          plugins: {
+            legend: {
+              position: "bottom", align: "start",
+              labels: { usePointStyle: true, pointStyle: "circle", padding: 16, font: { family: "'DM Sans'", size: 12 }, color: "#717182" },
             },
-          },
           },
         },
       });
 
-      // Secondary Emotion pie chart
       const secondaryLabels = Object.keys(secondaryEmotionCounts);
       const secondaryColors = secondaryLabels.map((_, i) => emotionColorPalette[(i + 3) % emotionColorPalette.length]);
 
       if (secondaryEmotionChart) secondaryEmotionChart.destroy();
 
-      // Only render if there's a canvas for it. Let's assume the user will add it in HTML.
       const secCanvas = document.getElementById("secondary-emotion-chart");
       if (secCanvas && secondaryLabels.length > 0) {
         secondaryEmotionChart = new Chart(secCanvas, {
@@ -438,19 +463,18 @@ const TONE_INTENSITY_TOOLTIP =
             labels: secondaryLabels,
             datasets: [{ data: Object.values(secondaryEmotionCounts), backgroundColor: secondaryColors, borderWidth: 0, hoverOffset: 6 }],
           },
-          options: {responsive: true,maintainAspectRatio: false,cutout: "65%",
-            plugins: {legend: {position: "bottom",align: "start",
-              labels: {usePointStyle: true,pointStyle: "circle",padding: 16,
-                font: { family: "'DM Sans'", size: 12 },
-                color: "#717182",
+          options: {
+            responsive: true, maintainAspectRatio: false, cutout: "65%",
+            plugins: {
+              legend: {
+                position: "bottom", align: "start",
+                labels: { usePointStyle: true, pointStyle: "circle", padding: 16, font: { family: "'DM Sans'", size: 12 }, color: "#717182" },
               },
-            },
             },
           },
         });
       }
 
-      // Genre pie chart
       const genreCounts = {};
       articles.forEach(a => {
         const g = (a.genre || "Unknown").trim();
@@ -471,18 +495,17 @@ const TONE_INTENSITY_TOOLTIP =
           labels: genreLabels,
           datasets: [{ data: Object.values(genreCounts), backgroundColor: genreColors, borderWidth: 0, hoverOffset: 6 }],
         },
-        options: {responsive: true,maintainAspectRatio: false,cutout: "65%",
-          plugins: {legend: {position: "bottom",align: "start",
-            labels: {usePointStyle: true,pointStyle: "circle",padding: 16,
-              font: { family: "'DM Sans'", size: 12 },
-              color: "#717182",
+        options: {
+          responsive: true, maintainAspectRatio: false, cutout: "65%",
+          plugins: {
+            legend: {
+              position: "bottom", align: "start",
+              labels: { usePointStyle: true, pointStyle: "circle", padding: 16, font: { family: "'DM Sans'", size: 12 }, color: "#717182" },
             },
-          },
           },
         },
       });
 
-      // Source bar
       const srcCounts = {};
       articles.forEach(a => { srcCounts[a.source] = (srcCounts[a.source] || 0) + 1; });
 
@@ -515,7 +538,7 @@ const TONE_INTENSITY_TOOLTIP =
       : `<p style="font-size:.85rem;color:var(--text-400)">No actors identified yet.</p>`;
     }
 
-    // ── Global feedback form ───────────────────────────────────────
+    // ── Global Feedback Form ───────────────────────────────────────
     function resetFeedbackForm() {
       feedbackRating = null;
       document.getElementById("feedback-success").style.display = "none";
@@ -550,16 +573,28 @@ const TONE_INTENSITY_TOOLTIP =
       } catch(err) { console.error("Global feedback error:", err); }
     });
 
-    // ── Event listeners ────────────────────────────────────────────
+    // ── Event Listeners ────────────────────────────────────────────
     document.getElementById("main-search-btn").addEventListener("click", () => {
-      handleSearch(mainSearchInput.value);
+    const country = document.getElementById("main-country-select").value;
+    handleSearch(mainSearchInput.value, country);
     });
-    mainSearchInput.addEventListener("keydown", e => { if (e.key === "Enter") handleSearch(mainSearchInput.value); });
+    mainSearchInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        const country = document.getElementById("main-country-select").value;
+        handleSearch(mainSearchInput.value, country);
+      }
+    });
 
     document.getElementById("inline-search-btn").addEventListener("click", () => {
-      handleSearch(inlineSearchInput.value);
+      const country = document.getElementById("inline-country-select").value;
+      handleSearch(inlineSearchInput.value, country);
     });
-    inlineSearchInput.addEventListener("keydown", e => { if (e.key === "Enter") handleSearch(inlineSearchInput.value); });
+    inlineSearchInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        const country = document.getElementById("inline-country-select").value;
+        handleSearch(inlineSearchInput.value, country);
+      }
+    });
 
     // ── Utility ────────────────────────────────────────────────────
     function esc(str) {
@@ -568,8 +603,7 @@ const TONE_INTENSITY_TOOLTIP =
       .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
     }
 
-
-    // ── Trending topics on home page ───────────────────────────────
+    // ── Trending Topics ────────────────────────────────────────────
     async function loadTrending() {
       try {
         const res  = await fetch("/api/analytics-data");
@@ -585,13 +619,11 @@ const TONE_INTENSITY_TOOLTIP =
           const chip = document.createElement("button");
           chip.className   = "trending-chip";
           chip.textContent = t.event_query;
-          // clicking a chip pre-fills the search and launches it
           chip.addEventListener("click", () => handleSearch(t.event_query));
           list.appendChild(chip);
         });
-
       } catch(e) {
-        // silently fail if analytics not available
+        // Silently fail if analytics are not available
       }
     }
 

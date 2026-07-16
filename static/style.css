@@ -55,8 +55,8 @@ input, textarea { font-family: inherit; }
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   HEADER
-══════════════════════════════════════════════════════════════════ */
+ *  HEADER
+ ═ *═════════════════════════════════════════════════════════════════ */
 .app-header {
   position: sticky;
   top: 0;
@@ -92,14 +92,14 @@ input, textarea { font-family: inherit; }
 .nav-link.active { color: var(--indigo-600); }
 
 /* ══════════════════════════════════════════════════════════════════
-   LAYOUT
-══════════════════════════════════════════════════════════════════ */
+ *  LAYOUT
+ ═ *═════════════════════════════════════════════════════════════════ */
 .app-root { min-height: 100vh; background: var(--bg); }
 .main-container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
 
 /* ══════════════════════════════════════════════════════════════════
-   SEARCH SECTION
-══════════════════════════════════════════════════════════════════ */
+ *  SEARCH SECTION
+ ═ *═════════════════════════════════════════════════════════════════ */
 .search-section {
   display: flex;
   flex-direction: column;
@@ -170,7 +170,6 @@ input, textarea { font-family: inherit; }
   animation: fadeUp 0.5s ease both;
   animation-delay: 0.2s;
 }
-
 .trending-title {
   font-size: 0.85rem;
   font-weight: 700;
@@ -178,14 +177,12 @@ input, textarea { font-family: inherit; }
   text-transform: uppercase;
   color: var(--text-400);
 }
-
 .trending-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
 }
-
 .trending-chip {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -197,17 +194,15 @@ input, textarea { font-family: inherit; }
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
-
 .trending-chip:hover {
   background: var(--indigo-50);
   border-color: var(--indigo-600);
   color: var(--indigo-600);
 }
 
-
 /* ══════════════════════════════════════════════════════════════════
-   RESULTS
-══════════════════════════════════════════════════════════════════ */
+ *  RESULTS
+ ═ *═════════════════════════════════════════════════════════════════ */
 .results-wrapper { padding: 36px 0 64px; animation: fadeUp .4s ease both; }
 .results-topbar {
   display: flex; flex-wrap: wrap;
@@ -259,8 +254,8 @@ input, textarea { font-family: inherit; }
 .error-message { color: var(--rose-700); background: var(--rose-50); border: 1px solid var(--rose-200); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: .9rem; }
 
 /* ══════════════════════════════════════════════════════════════════
-   FILTERS
-══════════════════════════════════════════════════════════════════ */
+ *  FILTERS
+ ═ *═════════════════════════════════════════════════════════════════ */
 .filters-panel {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -299,8 +294,8 @@ input, textarea { font-family: inherit; }
 .capitalize { text-transform: capitalize; }
 
 /* ══════════════════════════════════════════════════════════════════
-   RESULT CARD
-══════════════════════════════════════════════════════════════════ */
+ *  RESULT CARD
+ ═ *═════════════════════════════════════════════════════════════════ */
 .result-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -338,9 +333,6 @@ input, textarea { font-family: inherit; }
   letter-spacing: .06em; text-transform: uppercase;
   white-space: nowrap; flex-shrink: 0;
 }
-/*.badge-positive { color: var(--emerald-700); background: var(--emerald-50); border-color: var(--emerald-200); }
-.badge-negative { color: var(--rose-700);    background: var(--rose-50);    border-color: var(--rose-200);    }
-.badge-neutral  { color: var(--slate-700);   background: var(--slate-50);   border-color: var(--slate-200);   }*/
 
 .card-headline {
   font-family: "DM Serif Display", Georgia, serif;
@@ -386,8 +378,8 @@ input, textarea { font-family: inherit; }
 .tag-bias   { color: #993C1D; background: #FAECE7; border-color: #F0997B; }
 
 /* ══════════════════════════════════════════════════════════════════
-   STAR RATING
-══════════════════════════════════════════════════════════════════ */
+ *  STAR RATING
+ ═ *═════════════════════════════════════════════════════════════════ */
 .card-footer { border-top: 1px solid var(--border-light); padding-top: 12px; margin-top: 12px; }
 .star-rating { display: flex; align-items: center; justify-content: space-between; }
 .rating-label { font-size: .78rem; color: var(--text-500); }
@@ -397,8 +389,8 @@ input, textarea { font-family: inherit; }
 .rating-done { font-size: .78rem; color: var(--emerald-700); }
 
 /* ══════════════════════════════════════════════════════════════════
-   ANALYSIS SECTION
-══════════════════════════════════════════════════════════════════ */
+ *  ANALYSIS SECTION
+ ═ *═════════════════════════════════════════════════════════════════ */
 .analysis-col { display: flex; flex-direction: column; gap: 20px; }
 .analysis-card {
   background: var(--surface); border: 1px solid var(--border);
@@ -411,8 +403,8 @@ input, textarea { font-family: inherit; }
 .actor-chip-count { width: 20px; height: 20px; border-radius: 50%; background: var(--neutral-200); display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 700; color: var(--text-500); }
 
 /* ══════════════════════════════════════════════════════════════════
-   GLOBAL FEEDBACK
-══════════════════════════════════════════════════════════════════ */
+ *  GLOBAL FEEDBACK
+ ═ *═════════════════════════════════════════════════════════════════ */
 .global-feedback-card {
   margin-top: 28px; padding: 22px;
   background: var(--surface); border: 1px solid var(--border);
@@ -450,18 +442,15 @@ input, textarea { font-family: inherit; }
 .submit-feedback-btn:hover:not(:disabled) { background: var(--indigo-700); }
 .submit-feedback-btn:disabled { background: var(--neutral-200); color: var(--text-500); cursor: not-allowed; }
 
-/* ── Loading skeleton ──────────────────────────────────────────── */
+/* ── Loading Skeleton ──────────────────────────────────────────── */
 .loading-cards { display: flex; flex-direction: column; gap: 14px; }
 .skeleton-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
 .skeleton-line { background: var(--neutral-100); border-radius: 4px; margin-bottom: 10px; animation: pulse 1.4s ease infinite; }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
 
-
-
 /* ══════════════════════════════════════════════════════════════════
-   FEEDBACK PAGE
-══════════════════════════════════════════════════════════════════ */
-
+ *  FEEDBACK PAGE
+ ═ *═════════════════════════════════════════════════════════════════ */
 .rating-circle-wrap {
   display: flex;
   flex-direction: column;
@@ -469,29 +458,24 @@ input, textarea { font-family: inherit; }
   justify-content: center;
   gap: 8px;
 }
-
 .rating-circle-label {
   font-size: 13px;
   color: var(--text-500);
   margin-top: 4px;
 }
 
-
 /* ══════════════════════════════════════════════════════════════════
-   TOOLTIPS
-══════════════════════════════════════════════════════════════════ */
+ *  TOOLTIPS
+ ═ *═════════════════════════════════════════════════════════════════ */
 .tooltip-wrapper {
   position: relative;
   display: inline-block;
   cursor: help;
   border-bottom: 1px dotted currentColor;
 }
-
-/* Elevate the wrapper's stacking context on hover so ::after paints above Canvas elements */
 .tooltip-wrapper:hover {
   z-index: 1000;
 }
-
 .tooltip-wrapper:hover::after {
   content: attr(data-tooltip);
   position: absolute;
@@ -512,7 +496,6 @@ input, textarea { font-family: inherit; }
   pointer-events: none;
   animation: fadeUp 0.2s ease both;
 }
-
 .tooltip-wrapper:hover::before {
   content: "";
   position: absolute;
@@ -525,17 +508,14 @@ input, textarea { font-family: inherit; }
   pointer-events: none;
 }
 
-
 /* ══════════════════════════════════════════════════════════════════
-   ABOUT SECTION
-══════════════════════════════════════════════════════════════════ */
-
+ *  ABOUT SECTION
+ ═ *═════════════════════════════════════════════════════════════════ */
 .about-wrap {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 48px 24px 80px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
 }
-
 .about-wrap h1 {
   font-size: 1.6rem;
   font-weight: 800;
@@ -543,14 +523,12 @@ input, textarea { font-family: inherit; }
   color: var(--text-900);
   margin-bottom: 6px;
 }
-
 .about-subtitle {
   font-size: 0.9rem;
   color: var(--text-500);
   line-height: 1.6;
   margin-bottom: 36px;
 }
-
 .metric-block { margin-bottom: 28px; }
 .metric-block h2 {
   font-size: 0.82rem;
@@ -560,14 +538,12 @@ input, textarea { font-family: inherit; }
   color: var(--indigo-600);
   margin-bottom: 8px;
 }
-
 .metric-block p {
   font-size: 0.88rem;
   color: var(--text-700);
   line-height: 1.65;
   margin-bottom: 10px;
 }
-
 .metric-block ul {
   list-style: none;
   padding: 0;
@@ -576,24 +552,53 @@ input, textarea { font-family: inherit; }
   flex-direction: column;
   gap: 3px;
 }
-
 .metric-block li {
   font-size: 0.86rem;
   color: var(--text-700);
   line-height: 1.6;
 }
-
 .metric-block li strong { color: var(--text-900); }
-
 .about-divider {
   border: none;
   border-top: 1px solid var(--border);
   margin: 24px 0;
 }
-
 .metric-block a {
-  color: var(--indigo-600); 
+  color: var(--indigo-600);
   text-decoration: underline;
 }
 
+/* ── Country Select Styles ─────────────────────────────────────── */
+.country-select {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 120px; /* Spazio sufficiente per il bottone principale */
+  border: none;
+  background: transparent;
+  color: var(--text-700);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  outline: none;
+  cursor: pointer;
+  appearance: none; /* Nasconde la freccia di default su alcuni browser per un look più pulito */
+}
 
+.country-select option {
+  color: var(--text-900);
+}
+
+.inline-search .country-select {
+  right: 85px; /* Spazio per il bottone inline più piccolo */
+  font-size: 0.85rem;
+}
+
+/* Aggiorniamo il padding degli input per fare spazio alla tendina ed evitare che il testo si sovrapponga */
+.search-bar input {
+  padding: 16px 200px 16px 52px; /* Aumentato il padding-right */
+}
+
+.inline-search input {
+  padding: 10px 150px 10px 18px; /* Aumentato il padding-right */
+}

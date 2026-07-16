@@ -43,6 +43,18 @@
           </svg>
         </span>
         <input id="main-search-input" type="text" placeholder="Search a news event…" autocomplete="off" />
+
+        <select id="main-country-select" class="country-select">
+          <option value="US">🇺🇸 US</option>
+          <option value="GB">🇬🇧 GB</option>
+          <option value="IT">🇮🇹 IT</option>
+          <option value="FR">🇫🇷 FR</option>
+          <option value="DE">🇩🇪 DE</option>
+          <option value="ES">🇪🇸 ES</option>
+          <option value="CA">🇨🇦 CA</option>
+          <option value="AU">🇦🇺 AU</option>
+        </select>
+
         <button id="main-search-btn">Analyze</button>
       </div>
     </section>
@@ -61,6 +73,18 @@
         </div>
         <div class="inline-search">
           <input id="inline-search-input" type="text" placeholder="Search another event…" autocomplete="off" />
+
+          <select id="inline-country-select" class="country-select">
+            <option value="US">🇺🇸 US</option>
+            <option value="GB">🇬🇧 GB</option>
+            <option value="IT">🇮🇹 IT</option>
+            <option value="FR">🇫🇷 FR</option>
+            <option value="DE">🇩🇪 DE</option>
+            <option value="ES">🇪🇸 ES</option>
+            <option value="CA">🇨🇦 CA</option>
+            <option value="AU">🇦🇺 AU</option>
+          </select>
+
           <button id="inline-search-btn">Search</button>
         </div>
       </div>
@@ -121,9 +145,17 @@
             <h4 class="analysis-card-title">Top Actors Identified</h4>
             <div class="actors-list" id="actors-list"></div>
           </div>
+
+          <!-- Top Biases Card -->
+          <div class="analysis-card">
+            <h4 class="analysis-card-title">Main Biases Detected</h4>
+            <div class="biases-list" id="biases-list" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;"></div>
+          </div>
         </div>
 
-      </div><div id="feedback-section" class="global-feedback-card" style="display:none;">
+      </div>
+
+      <div id="feedback-section" class="global-feedback-card" style="display:none;">
         <h3>What do you think about these results?</h3>
         <div id="feedback-success" class="feedback-success" style="display:none;">
           <p>Thank you! Your feedback has been saved successfully. ✅</p>
@@ -145,7 +177,8 @@
         </form>
       </div>
 
-    </div></main>
+    </div>
+  </main>
 </div>
 
 <script src="/static/app.js"></script>

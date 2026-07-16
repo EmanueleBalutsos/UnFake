@@ -31,6 +31,7 @@ except Exception:
     pass
 
 from headline_analyst.retrieval_pipeline import gather_articles
+from headline_analyst.fetchers import fetch_from_google_news
 from database.managment.firebase_manager import FirebaseManager
 from headline_analyst.analyzer_pipeline import analyze_headlines
 from database.analysis.feedback_stats import generate_report
@@ -56,6 +57,18 @@ if os.path.exists(FIREBASE_CERT_PATH):
 else:
     print(f"Firebase credentials not found in {FIREBASE_CERT_PATH}")
 
+USE_RSS = True;
+COUNTRY_LANG_MAP = {
+    "US": "en",
+    "GB": "en",
+    "IT": "it",
+    "FR": "fr",
+    "DE": "de",
+    "ES": "es",
+    "CA": "en",
+    "AU": "en",
+}
+
 
 @app.route("/")
 def index():
@@ -75,31 +88,36 @@ def sanitize_query(raw: str) -> str:
     cleaned = re.sub(r"[^a-zA-Z0-9\s]", " ", raw)
     return re.sub(r"\s+", " ", cleaned).strip()
 
-
 @app.route("/search", methods=["GET", "POST"])
 def search():
-    """Gathers and analyzes articles based on the search query."""
+    """Gathers and analyzes articles based on the search query and selected country."""
     if request.method == "POST":
         data = request.get_json() or {}
-        # Fetching 'event' instead of 'q' to match the frontend request
         event = sanitize_query(data.get("event", data.get("q", "")))
+        country = data.get("country", "US").upper()
     else:
         event = sanitize_query(request.args.get("event", request.args.get("q", "")))
+        country = request.args.get("country", "US").upper()
 
     if not event:
         return jsonify({"error": "Missing search parameter"}), 400
 
+    lang = COUNTRY_LANG_MAP.get(country, "en")
+
     try:
-        articles = asyncio.run(gather_articles(
-            event=event,
-            num_queries=5,
-            page_size_per_query=5,
-            embedding_threshold=0.4,
-            use_query_expansion=True,
-            use_clustering=False,
-            use_llm_filter=True,
-            verbose=VERBOSE
-        ))
+        if USE_RSS:
+            articles = fetch_from_google_news(event, lang=lang, country=country)
+        else:
+            articles = asyncio.run(gather_articles(
+                event=event,
+                num_queries=5,
+                page_size_per_query=5,
+                embedding_threshold=0.4,
+                use_query_expansion=True,
+                use_clustering=False,
+                use_llm_filter=True,
+                verbose=VERBOSE
+            ))
 
         if not articles:
             return jsonify({"articles": []})
@@ -110,13 +128,13 @@ def search():
         for i, a in enumerate(articles):
             analysis = analyses[i] if i < len(analyses) else None
 
-            frame_val = "OTHER" # generic frame of the headline among the 5 main types
-            actors_val = [] # actors in the headline
-            biases_val = {} # types of biases identified in the headline
-            focuses_val = [] # focuses (category of the perspective) among economy, policy, etc...
-            genre_val = "OTHER" # main genre of the headline among informative, editorial etc...
-            sentiment_val = ["NEUTRAL"] # main emotion
-            intensity_val = 3 # tone intensity score from 1 to 5
+            frame_val = "OTHER"
+            actors_val = []
+            biases_val = {}
+            focuses_val = []
+            genre_val = "OTHER"
+            sentiment_val = ["NEUTRAL"]
+            intensity_val = 3
 
             if analysis:
                 if hasattr(analysis, "frame") and analysis.frame:
@@ -134,17 +152,6 @@ def search():
                 if hasattr(analysis, "biases") and analysis.biases:
                     biases_val = {b.name: score for b, score in analysis.biases.items()} if analysis.biases else {}
 
-                # has_biases = bool(hasattr(analysis, "biases") and analysis.biases)
-
-                # if intensity_val >= 4 and has_biases:
-                #     sentiment_val = "negative"
-                # elif intensity_val <= 2 and not has_biases:
-                #     sentiment_val = "positive"
-                # elif tone_val.lower() == "conflict":
-                #     sentiment_val = "negative"
-                # else:
-                #     sentiment_val = "neutral"
-
             result.append({
                 "title":        a.title,
                 "source":       a.source,
@@ -156,7 +163,7 @@ def search():
                 "tone_intensity": intensity_val,
                 "actors":       actors_val,
                 "biases":       biases_val,
-                "focuses":        focuses_val,
+                "focuses":      focuses_val,
                 "genre":        genre_val
             })
 
@@ -165,7 +172,6 @@ def search():
     except Exception as e:
         print("SEARCH ERROR:", str(e))
         return jsonify({"error": str(e)}), 500
-
 
 @app.route("/feedback", methods=["POST"])
 def feedback():
