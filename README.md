@@ -1,27 +1,27 @@
 # UNFAKE
 
-**UNFAKE** is an innovative, machine learning and AI powered web application designed to combat misinformation, polarization, and echo chambers[cite: 1]. Unlike traditional platforms that evaluate the overall reliability of a news outlet, UNFAKE performs a comparative, headline-level analysis, showing exactly how different media frame the same event[cite: 1]. 
+**UNFAKE** is an innovative, machine learning and AI powered web application designed to combat misinformation, polarization, and echo chambers. Unlike traditional platforms that evaluate the overall reliability of a news outlet, UNFAKE performs a comparative, headline-level analysis, showing exactly how different media frame the same event. 
 
-Bypassing the historical reputation of individual newspapers, the infrastructure analyzes the language used through a complex pipeline that processes data retrieved from over 80,000 global journalistic sources[cite: 1].
+Bypassing the historical reputation of individual newspapers, the infrastructure analyzes the language used through a complex pipeline that processes data retrieved from over 80,000 global journalistic sources.
 
 ### Key Features
 
-Our engine analyzes headlines across **7 key dimensions**[cite: 1]:
-* **Bias Detection:** 13 types of bias (e.g., political, gender, sensationalism)[cite: 1].
-* **Agency Analysis:** Identifies actors (active, passive, mentioned)[cite: 1].
-* **Generic Framing:** 5 types (conflict, thematic, episodic, etc.)[cite: 1].
-* **Evaluative Focus:** 13 perspectives (economic, legal, moral)[cite: 1].
-* **Intent Detection:** 5 editorial intents (informative, investigative, etc.)[cite: 1].
-* **Tone Intensity:** Language intensity evaluation on a 1-5 scale[cite: 1].
-* **Emotion Detection:** Identification of the main emotion among 28 categories[cite: 1].
+Our engine analyzes headlines across **7 key dimensions**:
+* **Bias Detection:** 13 types of bias (e.g., political, gender, sensationalism).
+* **Agency Analysis:** Identifies actors (active, passive, mentioned).
+* **Generic Framing:** 5 types (conflict, thematic, episodic, etc.).
+* **Evaluative Focus:** 13 perspectives (economic, legal, moral).
+* **Intent Detection:** 5 editorial intents (informative, investigative, etc.).
+* **Tone Intensity:** Language intensity evaluation on a 1-5 scale.
+* **Emotion Detection:** Identification of the main emotion among 28 categories.
 
 ### Technology Stack
 
-* **Backend:** Python 3.12, Flask 3.1.1 (Async/await architecture)[cite: 1].
-* **AI & NLP:** Google Gemini 3.1 Flash-Lite (configurable with Deepseek), Sentence Transformers, RoBERTa (GoEmotions)[cite: 1].
-* **Data Sources:** NewsAPI, GNews API[cite: 1].
-* **Database & Analytics:** Firebase Firestore, real-time feedback system[cite: 1].
-* **Frontend & UI:** HTML, CSS, JavaScript (Interactive analytics dashboard)[cite: 1].
+* **Backend:** Python 3.12, Flask 3.1.1 (Async/await architecture).
+* **AI & NLP:** Google Gemini 3.1 Flash-Lite (configurable with Deepseek), Sentence Transformers, RoBERTa (GoEmotions).
+* **Data Sources:** NewsAPI, GNews API.
+* **Database & Analytics:** Firebase Firestore, real-time feedback system.
+* **Frontend & UI:** HTML, CSS, JavaScript (Interactive analytics dashboard).
 
 ---
 
