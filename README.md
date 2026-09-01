@@ -1,178 +1,113 @@
-# UnFake
+# UNFAKE
 
-# Setup the environment
+**UNFAKE** is an innovative, machine learning and AI powered web application designed to combat misinformation, polarization, and echo chambers[cite: 1]. Unlike traditional platforms that evaluate the overall reliability of a news outlet, UNFAKE performs a comparative, headline-level analysis, showing exactly how different media frame the same event[cite: 1]. 
 
-*Python version : 3.12.3*
+Bypassing the historical reputation of individual newspapers, the infrastructure analyzes the language used through a complex pipeline that processes data retrieved from over 80,000 global journalistic sources[cite: 1].
 
-### Windows
+### Key Features
 
-```
+Our engine analyzes headlines across **7 key dimensions**[cite: 1]:
+* **Bias Detection:** 13 types of bias (e.g., political, gender, sensationalism)[cite: 1].
+* **Agency Analysis:** Identifies actors (active, passive, mentioned)[cite: 1].
+* **Generic Framing:** 5 types (conflict, thematic, episodic, etc.)[cite: 1].
+* **Evaluative Focus:** 13 perspectives (economic, legal, moral)[cite: 1].
+* **Intent Detection:** 5 editorial intents (informative, investigative, etc.)[cite: 1].
+* **Tone Intensity:** Language intensity evaluation on a 1-5 scale[cite: 1].
+* **Emotion Detection:** Identification of the main emotion among 28 categories[cite: 1].
+
+### Technology Stack
+
+* **Backend:** Python 3.12, Flask 3.1.1 (Async/await architecture)[cite: 1].
+* **AI & NLP:** Google Gemini 3.1 Flash-Lite (configurable with Deepseek), Sentence Transformers, RoBERTa (GoEmotions)[cite: 1].
+* **Data Sources:** NewsAPI, GNews API[cite: 1].
+* **Database & Analytics:** Firebase Firestore, real-time feedback system[cite: 1].
+* **Frontend & UI:** HTML, CSS, JavaScript (Interactive analytics dashboard)[cite: 1].
+
+---
+
+## Environment Setup
+
+**Prerequisite:** Make sure you have *Python 3.12.3* or higher installed.
+
+### 1. Creating and Activating the Virtual Environment
+
+**On Windows:**
+```bash
 python -m venv .venv
+# Using PowerShell:
+.\.venv\Scripts\Activate.ps1
+# Using CMD:
+.\.venv\Scripts\activate.bat
 ```
-
-Then, activate the virtual environment.
-
-Through Powershell :
-```
-.\venv\Scripts\Activate.ps1
-```
-
-Through cmd :
-```
-.\venv\Scripts\activate.bat
-```
-
-### Linux/MacOS
-
-```
+**On Linux / MacOS:**
+```bash
 python3 -m venv .venv
-```
-Then, activate the virtual environment.
-```
 source .venv/bin/activate
 ```
+VSCode Users: After activating the environment in the terminal, ensure you select the correct interpreter via the Command Palette (Ctrl + Shift + P → Python: Select Interpreter → .venv). Otherwise, VSCode may run the global Python installation.
 
-### VSCode
-After having activated the virtual environment in the terminal, if using VSCode, also make sure to select the right interpreter in VSCode :
-
-```
-Ctrl + Shift + P → Python: Select Interpreter → .venv
-```
-
-Otherwise VS Code may run global Python and not the virtual environment.
-
-## Managing dependencies
-
-### Dependencies
-After having activated the virtual environment, make sure to have `pip` installed.
-
-Do this once after activation :
-
-```
+### 2. Managing Dependencies
+Once the virtual environment is activated, upgrade pip and install the requirements:
+```bash
+# Windows:
 python -m pip install --upgrade pip
-```
-
-To install dependencies already used in the project :
-```
+# Linux / MacOS:
 pip install -r requirements.txt
 ```
-**Run this command everytime `requirements.txt` gets updated with new dependencies to make sure to have the same dependencies as everyone else.**
+Note: Run pip install -r requirements.txt every time the file is updated. If you install new dependencies, remember to run pip freeze > requirements.txt to update the file.
 
-### Updating requirements
-If you installed new dependencies, update `requirements.txt` so everyone else can have the updated environment.
+---
 
+## Configuration
+
+Environment Variables (.env)
+
+Create a .env file at the base of the project folder. This file should never be committed to the remote repository.
+
+Add the following environment variables required to run the code:
+
+### Get your API key at: [https://newsapi.org/](https://newsapi.org/)
+```bash
+NEWSAPI_KEY=your_newsapi_key
 ```
-pip freeze > requirements.txt
+### Get your API key at: [https://gnews.io/](https://gnews.io/)
+```bash
+GNEWS_KEY=your_gnews_key
 ```
-
-## Environment variables & API keys
-The `.env` file should be located at the base of the project's folder, and it contains all the API tokens necessary for API dependencies. **It should never be committed to the remote repository.**
-
-To add environment variables in your own `.env` file :
+### Get your API key at: [https://aistudio.google.com/api-keys](https://aistudio.google.com/api-keys)
+```bash
+GEMINI_API_KEY=your_gemini_api_key
 ```
-KEY_NAME=value
-```
+### AI Models Configuration (config.yaml)
 
-The following environment variables are necessary to be set up to run the code :
+The models used for AI-based tasks at runtime can be easily specified by changing the config.yaml file. Currently, Gemini and Deepseek are available. The tool is designed to be modular for future implementations.
 
-### `NEWSAPI_KEY`
+### Firebase Database (firebase-credentials.json)
 
-The API key for the NewsAPI Python library to fetch headline articles.
+The backend requires a private key to securely and programmatically interact with the Firebase database.
 
-Inside `.env` file :
-```
-NEWSAPI_KEY=... (your api key for NewsAPI)
-```
+   1. Log in to the Firebase Console.
 
-To get one, just create an account on : https://newsapi.org/
+   2. Select your "UNFAKE" project.
 
-### `GNEWS_KEY`
+   3. Go to Project settings (gear icon) → Service accounts.
 
-The API key for the GNews API fetch headline articles with Google News.
+   4. Click Generate new private key.
 
-Inside `.env` file :
-```
-GNEWS_KEY=... (your api key for GNews)
-```
+   5. Rename the downloaded file to firebase-credentials.json.
 
-To get one, just create an account on : https://gnews.io/
+   6. Place the file in the base folder of the project (at the same level as app.py and .env).
 
-### `GEMINI_API_KEY`
+   #### IMPORTANT SECURITY NOTE: The firebase-credentials.json file grants full access to your database. Never commit this file to the Git repository.
 
-The API key for Google's Gemini LLM models.
+---
 
-Inside `.env` file :
-```
-GEMINI_API_KEY=... (your api key for Gemini)
-```
-
-To get one, connect to a google account and generate an API key on : https://aistudio.google.com/api-keys
-
-## Config at run time
-
-Models used at run time for the different AI-based tasks can be easily specified by only changing the `config.yaml` file.
-
-*Note: Currently, Only Gemini & Deepseek are available. While this tool is planned to be modular, concrete implementations for other LLM providers are not yet made.*
-
-## Firebase Configuration
-
-For the project to work correctly, you need a credentials file for administrative access to the Firebase database.
-
-### What is `firebase-credentials.json`?
-
-This file is a private key in JSON format that authorizes the Python backend to securely and programmatically read and write poll data to Firebase.
-
-### File Location
-
-The `firebase-credentials.json` file must be placed in the **base folder** of the `UnFake` project, at the same level as:
-- `.env`
-- `requirements.txt`
-- `config.yaml`
-
-### How to Get the File (Step-by-Step Guide)
-
-1. **Log in to Firebase Console**
-   - Go to [https://console.firebase.google.com/](https://console.firebase.google.com/)
-   - Sign in with your Google account
-
-2. **Select your project**
-   - Choose the Firebase project you're using for "UnFake"
-
-3. **Open Project Settings**
-   - Click the gear icon next to "Project Overview"
-   - Select **"Project settings"**
-
-4. **Go to the "Service accounts" tab**
-   - In the horizontal menu at the top, click on **"Service accounts"**
-
-5. **Generate a new private key**
-   - In the "Firebase Admin SDK" section, click **"Generate new private key"**
-   - In the dialog window, click **"Generate key"** to confirm
-
-6. **Rename and place the file**
-   - Your browser will download a file with a name similar to:  
-     `your-project-id-firebase-adminsdk-xxxxx-xxxxxxxxxx.json`
-   - **Rename** the file to: `firebase-credentials.json`
-   - **Move** the renamed file to the base folder of the `UnFake` project
-
-### ⚠️ Important – Security
-
-> **This file must never be committed to the Git repository.**
-
-The file contains a private key that would grant full access to your Firebase database.
-
-# Launch
-
-Launch the web server with :
-
-```
+## Launch
+To start the local web server, run:
+```bash
 python app.py
 ```
-
-Optional argument : `--verbose`.
-
-```
+For debugging purposes or to display the real-time output of the query expansion, retrieval, and framing analysis pipeline in the terminal, use the optional verbose argument:
+```bash
 python app.py --verbose
 ```
-
-This argument displays the output of the query expansion/retrieval of articles/filtering/framing analysis pipeline in the terminal. It's disabled by default.
