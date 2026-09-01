@@ -19,7 +19,7 @@ Our engine analyzes headlines across **7 key dimensions**:
 
 * **Backend:** Python 3.12, Flask 3.1.1 (Async/await architecture).
 * **AI & NLP:** Google Gemini 3.1 Flash-Lite (configurable with Deepseek), Sentence Transformers, RoBERTa (GoEmotions).
-* **Data Sources:** NewsAPI, GNews API.
+* **Data Sources:** Duckduckgo, NewsAPI, GNews API.
 * **Database & Analytics:** Firebase Firestore, real-time feedback system.
 * **Frontend & UI:** HTML, CSS, JavaScript (Interactive analytics dashboard).
 
