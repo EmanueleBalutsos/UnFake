@@ -13,7 +13,7 @@ Our engine analyzes headlines across **7 key dimensions**:
 * **Evaluative Focus:** 13 perspectives (economic, legal, moral).
 * **Intent Detection:** 5 editorial intents (informative, investigative, etc.).
 * **Tone Intensity:** Language intensity evaluation on a 1-5 scale.
-* **Emotion Detection:** Identification of the main emotion among 28 categories.
+* **Emotion Detection:** Identification of the 2 main emotions among 28 categories.
 
 ### Technology Stack
 
