@@ -224,10 +224,48 @@ input, textarea { font-family: inherit; }
 
 .results-grid {
   display: grid;
-  grid-template-columns: 240px 1fr 380px;
-  gap: 28px; align-items: start;
+  grid-template-columns: 360px 1fr 380px;
+  gap: 28px;
+  align-items: start;
 }
-@media (max-width: 1100px) { .results-grid { grid-template-columns: 1fr; } }
+
+@media (max-width: 1100px) {
+  .results-grid { grid-template-columns: 1fr; }
+}
+
+.media-sources-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.media-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.media-column-header {
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--indigo-600);
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.media-column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
 .headlines-col { display: flex; flex-direction: column; gap: 14px; }
 .headlines-count {

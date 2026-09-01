@@ -104,8 +104,11 @@ const TONE_INTENSITY_TOOLTIP =
     const feedbackSection = document.getElementById("feedback-section");
 
     // ── Search ─────────────────────────────────────────────────────
-    async function handleSearch(query, country = "US") {
+    async function handleSearch(query, country = "US", engine = "duckduckgo") {
       if (!query.trim()) return;
+
+      document.getElementById("main-engine-select").value = engine;
+      document.getElementById("inline-engine-select").value = engine;
 
       currentQuery    = query;
       feedbackRating  = null;
@@ -127,7 +130,7 @@ const TONE_INTENSITY_TOOLTIP =
         const res  = await fetch("/search", {
           method:  "POST",
           headers: { "Content-Type": "application/json" },
-          body:    JSON.stringify({ event: query, country: country }),
+          body:    JSON.stringify({ event: query, country: country, engine: engine }),
         });
 
         if (!res.ok) throw new Error("Search failed");
@@ -190,22 +193,138 @@ const TONE_INTENSITY_TOOLTIP =
         analysisCol.style.display = "none";
     }
 
-    // ── Filters ────────────────────────────────────────────────────
+    // ── Filters ─────────────────────────────────────────────────────
     function buildFilters() {
       const sources = [...new Set(allArticles.map(a => a.source))];
+      const webSources = sources.filter(src => src.includes('.'));
+      const traditionalSources = sources.filter(src => !src.includes('.'));
 
-      sourceFilters.innerHTML = `<p class="filter-group-label">Source</p>`;
-      sources.forEach(src => {
-        const label = document.createElement("label");
-        label.className = "filter-item";
-        label.innerHTML = `<input type="checkbox" ${selectedSources.includes(src) ? "checked" : ""}/><span title="${esc(src)}">${esc(src)}</span>`;
-        label.querySelector("input").addEventListener("change", () => {
-          toggleFilter(selectedSources, src);
+      sourceFilters.innerHTML = `<p class="filter-group-label" style="font-size:1.1rem; margin-bottom: 12px;">Sources</p>`;
+
+      const allSelected = sources.length > 0 && selectedSources.length === sources.length;
+      const tradSelected = traditionalSources.length > 0 && traditionalSources.every(s => selectedSources.includes(s));
+      const webSelected = webSources.length > 0 && webSources.every(s => selectedSources.includes(s));
+
+      const safeUpdate = () => {
+        try {
           renderResults();
-          buildFilters();
-        });
-        sourceFilters.appendChild(label);
+        } catch (err) {
+          console.warn("Chart.js ha bloccato il render per mancanza di dati. Resetto la vista manualmente.", err);
+          const headlinesList = document.getElementById("headlines-list");
+          const headlinesCount = document.getElementById("headlines-count");
+          if (headlinesList) headlinesList.innerHTML = `<p style="padding: 20px; color: #666;">Nessuna fonte selezionata. Seleziona una fonte a sinistra.</p>`;
+          if (headlinesCount) headlinesCount.textContent = "Headlines (0)";
+        }
+        buildFilters();
+      };
+
+      const masterTogglesContainer = document.createElement("div");
+      masterTogglesContainer.style.display = "flex";
+      masterTogglesContainer.style.flexDirection = "column";
+      masterTogglesContainer.style.gap = "8px";
+      masterTogglesContainer.style.borderBottom = "1px solid var(--border-light)";
+      masterTogglesContainer.style.paddingBottom = "12px";
+      masterTogglesContainer.style.marginBottom = "12px";
+
+      const allLabel = document.createElement("label");
+      allLabel.className = "filter-item";
+      allLabel.style.fontWeight = "bold";
+      allLabel.innerHTML = `<input type="checkbox" ${allSelected ? "checked" : ""} /><span>All Sources</span>`;
+      allLabel.querySelector("input").addEventListener("change", (e) => {
+        selectedSources = e.target.checked ? [...sources] : [];
+        safeUpdate();
       });
+      masterTogglesContainer.appendChild(allLabel);
+
+      if (traditionalSources.length > 0) {
+        const tradLabel = document.createElement("label");
+        tradLabel.className = "filter-item";
+        tradLabel.style.fontWeight = "600";
+        tradLabel.style.marginLeft = "12px";
+        tradLabel.innerHTML = `<input type="checkbox" ${tradSelected ? "checked" : ""} /><span style="color: #4f46e5;">All Traditional Media</span>`;
+        tradLabel.querySelector("input").addEventListener("change", (e) => {
+          if (e.target.checked) {
+            traditionalSources.forEach(s => { if (!selectedSources.includes(s)) selectedSources.push(s); });
+          } else {
+            selectedSources = selectedSources.filter(s => !traditionalSources.includes(s));
+          }
+          safeUpdate();
+        });
+        masterTogglesContainer.appendChild(tradLabel);
+      }
+
+      if (webSources.length > 0) {
+        const webLabel = document.createElement("label");
+        webLabel.className = "filter-item";
+        webLabel.style.fontWeight = "600";
+        webLabel.style.marginLeft = "12px";
+        webLabel.innerHTML = `<input type="checkbox" ${webSelected ? "checked" : ""} /><span style="color: #4f46e5;">All New Media</span>`;
+        webLabel.querySelector("input").addEventListener("change", (e) => {
+          if (e.target.checked) {
+            webSources.forEach(s => { if (!selectedSources.includes(s)) selectedSources.push(s); });
+          } else {
+            selectedSources = selectedSources.filter(s => !webSources.includes(s));
+          }
+          safeUpdate();
+        });
+        masterTogglesContainer.appendChild(webLabel);
+      }
+
+      sourceFilters.appendChild(masterTogglesContainer);
+
+      const columnsContainer = document.createElement("div");
+      columnsContainer.style.display = "grid";
+      columnsContainer.style.gridTemplateColumns = "1fr 1fr";
+      columnsContainer.style.gap = "16px";
+      columnsContainer.style.width = "100%";
+      columnsContainer.style.minWidth = "300px";
+
+      const renderCategoryColumn = (sourceList, categoryTitle) => {
+        const col = document.createElement("div");
+        col.style.display = "flex";
+        col.style.flexDirection = "column";
+        col.style.gap = "6px";
+        col.style.minWidth = "0";
+
+        const catHeader = document.createElement("div");
+        catHeader.style.fontWeight = "bold";
+        catHeader.style.fontSize = "0.70rem";
+        catHeader.style.textTransform = "uppercase";
+        catHeader.style.color = "#6b7280";
+        catHeader.style.borderBottom = "1px solid #e5e7eb";
+        catHeader.style.paddingBottom = "4px";
+        catHeader.style.marginBottom = "6px";
+        catHeader.textContent = categoryTitle;
+        col.appendChild(catHeader);
+
+        sourceList.forEach(src => {
+          const label = document.createElement("label");
+          label.className = "filter-item";
+          label.style.overflow = "hidden";
+          label.style.textOverflow = "ellipsis";
+          label.style.whiteSpace = "nowrap";
+
+          label.innerHTML = `<input type="checkbox" ${selectedSources.includes(src) ? "checked" : ""}/><span title="${src}">${src}</span>`;
+
+          label.querySelector("input").addEventListener("change", () => {
+            if (selectedSources.includes(src)) {
+              selectedSources = selectedSources.filter(s => s !== src);
+            } else {
+              selectedSources.push(src);
+            }
+            safeUpdate();
+          });
+
+          col.appendChild(label);
+        });
+
+        return col;
+      };
+
+      columnsContainer.appendChild(renderCategoryColumn(traditionalSources, "Traditional"));
+      columnsContainer.appendChild(renderCategoryColumn(webSources, "New Media"));
+
+      sourceFilters.appendChild(columnsContainer);
 
       const emotionsSet = new Set();
       allArticles.forEach(a => {
@@ -215,26 +334,40 @@ const TONE_INTENSITY_TOOLTIP =
           emotionsSet.add(a.sentiment);
         }
       });
-
       const emotions = [...emotionsSet];
-      sentimentFilters.innerHTML = `<p class="filter-group-label">Emotion</p>`;
+
+      sentimentFilters.innerHTML = `<p class="filter-group-label" style="font-size:1.1rem; margin-top:20px; margin-bottom: 12px;">Sentiment</p>`;
+
+      const allEmotionsSelected = emotions.length > 0 && selectedSentiments.length === emotions.length;
+      const selectAllEmotions = document.createElement("label");
+      selectAllEmotions.className = "filter-item";
+      selectAllEmotions.style.fontWeight = "bold";
+      selectAllEmotions.style.borderBottom = "1px solid var(--border-light)";
+      selectAllEmotions.style.paddingBottom = "12px";
+      selectAllEmotions.style.marginBottom = "12px";
+      selectAllEmotions.innerHTML = `<input type="checkbox" ${allEmotionsSelected ? "checked" : ""} /><span>All Sentiments</span>`;
+
+      selectAllEmotions.querySelector("input").addEventListener("change", (e) => {
+        selectedSentiments = e.target.checked ? [...emotions] : [];
+        safeUpdate();
+      });
+      sentimentFilters.appendChild(selectAllEmotions);
+
       emotions.forEach(s => {
         const label = document.createElement("label");
         label.className = "filter-item capitalize";
         label.innerHTML = `<input type="checkbox" ${selectedSentiments.includes(s) ? "checked" : ""}/><span>${s.toLowerCase()}</span>`;
+
         label.querySelector("input").addEventListener("change", () => {
-          toggleFilter(selectedSentiments, s);
-          renderResults();
-          buildFilters();
+          if (selectedSentiments.includes(s)) {
+            selectedSentiments = selectedSentiments.filter(em => em !== s);
+          } else {
+            selectedSentiments.push(s);
+          }
+          safeUpdate();
         });
         sentimentFilters.appendChild(label);
       });
-    }
-
-    function toggleFilter(arr, value) {
-      const idx = arr.indexOf(value);
-      if (idx === -1) arr.push(value);
-      else arr.splice(idx, 1);
     }
 
     // ── Render Results ─────────────────────────────────────────────
@@ -574,27 +707,36 @@ const TONE_INTENSITY_TOOLTIP =
     });
 
     // ── Event Listeners ────────────────────────────────────────────
+
+    // 1. Click main research button
     document.getElementById("main-search-btn").addEventListener("click", () => {
-    const country = document.getElementById("main-country-select").value;
-    handleSearch(mainSearchInput.value, country);
+      const country = document.getElementById("main-country-select").value;
+      const engine = document.getElementById("main-engine-select").value;
+      handleSearch(mainSearchInput.value, country, engine);
     });
-    mainSearchInput.addEventListener("keydown", e => {
+
+    mainSearchInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         const country = document.getElementById("main-country-select").value;
-        handleSearch(mainSearchInput.value, country);
+        const engine = document.getElementById("main-engine-select").value;
+        handleSearch(mainSearchInput.value, country, engine);
       }
     });
 
+    // 2. Click inline search button
     document.getElementById("inline-search-btn").addEventListener("click", () => {
       const country = document.getElementById("inline-country-select").value;
-      handleSearch(inlineSearchInput.value, country);
+      const engine = document.getElementById("inline-engine-select").value;
+      handleSearch(inlineSearchInput.value, country, engine);
     });
-    inlineSearchInput.addEventListener("keydown", e => {
+        inlineSearchInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         const country = document.getElementById("inline-country-select").value;
-        handleSearch(inlineSearchInput.value, country);
+        const engine = document.getElementById("inline-engine-select").value;
+        handleSearch(inlineSearchInput.value, country, engine);
       }
     });
+
 
     // ── Utility ────────────────────────────────────────────────────
     function esc(str) {

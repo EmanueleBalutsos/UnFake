@@ -31,11 +31,10 @@ except Exception:
     pass
 
 from headline_analyst.retrieval_pipeline import gather_articles
-from headline_analyst.fetchers import fetch_from_google_news
 from database.managment.firebase_manager import FirebaseManager
 from headline_analyst.analyzer_pipeline import analyze_headlines
 from database.analysis.feedback_stats import generate_report
-
+from headline_analyst.fetchers import fetch_from_google_news, fetch_from_duckduckgo
 app = Flask(
     __name__,
     template_folder="templates",
@@ -90,14 +89,15 @@ def sanitize_query(raw: str) -> str:
 
 @app.route("/search", methods=["GET", "POST"])
 def search():
-    """Gathers and analyzes articles based on the search query and selected country."""
     if request.method == "POST":
         data = request.get_json() or {}
         event = sanitize_query(data.get("event", data.get("q", "")))
         country = data.get("country", "US").upper()
+        engine = data.get("engine", "duckduckgo").lower()
     else:
         event = sanitize_query(request.args.get("event", request.args.get("q", "")))
         country = request.args.get("country", "US").upper()
+        engine = request.args.get("engine", "duckduckgo").lower()
 
     if not event:
         return jsonify({"error": "Missing search parameter"}), 400
@@ -105,19 +105,10 @@ def search():
     lang = COUNTRY_LANG_MAP.get(country, "en")
 
     try:
-        if USE_RSS:
+        if engine == "google":
             articles = fetch_from_google_news(event, lang=lang, country=country)
         else:
-            articles = asyncio.run(gather_articles(
-                event=event,
-                num_queries=5,
-                page_size_per_query=5,
-                embedding_threshold=0.4,
-                use_query_expansion=True,
-                use_clustering=False,
-                use_llm_filter=True,
-                verbose=VERBOSE
-            ))
+            articles = fetch_from_duckduckgo(event, lang=lang, country=country)
 
         if not articles:
             return jsonify({"articles": []})
